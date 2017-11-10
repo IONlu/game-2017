@@ -33,7 +33,7 @@
     import MapEntity from '../engine/Client/Map'
     import PlayerEntity from '../engine/Client/Player'
     import BallEntity from '../engine/Client/Ball'
-    import ToolEntity from '../engine/Client/Tool'
+    import ToolTrait from '../engine/Client/Tool'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -49,7 +49,6 @@
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
             Factory.add('Ball', BallEntity)
-            Factory.add('Tool', ToolEntity)
 
             this.$game = new GameEngine(new Loop(20), this.$refs.renderer)
             this.$game.camera.scale.set(2)
@@ -69,7 +68,8 @@
                     ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
                 }
 
-                this.$tool = this.$game.createEntity('Tool')
+                this.$tool = new ToolTrait(this.$game)
+                this.$player.addTrait(this.$tool)
 
                 this.$game.start()
             })

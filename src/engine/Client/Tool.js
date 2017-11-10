@@ -1,10 +1,10 @@
-import Entity from './Entity'
+import { Trait } from '../Common/Entity'
 import { Graphics } from 'pixi.js'
 
-export default class Tool extends Entity {
+export default class Tool extends Trait {
     constructor (app) {
-        super(app)
-
+        super()
+        this.app = app
         this.size = 3
         this.sprite = new Graphics()
         this.updateToolSprite()
@@ -31,8 +31,8 @@ export default class Tool extends Entity {
         this.sprite.drawCircle(0, 0, this.size * 4)
     }
 
-    render (t) {
-        super.render(t)
+    render (entity, t) {
+        super.render(entity, t)
 
         let targetPosition = this.app.screenToWorldPosition(
             this.app.mousePosition.x,
