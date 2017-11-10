@@ -23,6 +23,7 @@
         width: 100%;
         max-width: 1024px;
         max-height: 768px;
+        cursor: none;
     }
 </style>
 
@@ -73,39 +74,6 @@
 
                 this.$game.start()
             })
-
-            /* let lastPosition
-            let isMoving = false
-            document.addEventListener('mousedown', evt => {
-                isMoving = true
-                lastPosition = {
-                    x: evt.clientX,
-                    y: evt.clientY
-                }
-            })
-
-            document.addEventListener('mousemove', evt => {
-                if (!isMoving) {
-                    return
-                }
-                this.$game.stage.position.x += evt.clientX - lastPosition.x
-                this.$game.stage.position.y += evt.clientY - lastPosition.y
-                lastPosition = {
-                    x: evt.clientX,
-                    y: evt.clientY
-                }
-            })
-
-            document.addEventListener('mouseup', evt => {
-                isMoving = false
-                this.$game.stage.position.x += evt.clientX - lastPosition.x
-                this.$game.stage.position.y += evt.clientY - lastPosition.y
-            })
-
-            document.addEventListener('wheel', evt => {
-                this.$game.stage.scale.x -= this.$game.stage.scale.x * (evt.deltaY / 100)
-                this.$game.stage.scale.y -= this.$game.stage.scale.y * (evt.deltaY / 100)
-            }) */
         },
 
         methods: {
