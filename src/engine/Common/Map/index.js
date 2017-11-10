@@ -87,6 +87,20 @@ export default class Map extends Entity {
         return tileData
     }
 
+    dig (x, y, toolsize) {
+        let radius = toolsize / 2
+        for (let i = Math.floor(x - radius); i < Math.ceil(x + radius); i++) {
+            for (let j = Math.floor(y - radius); j < Math.ceil(y + radius); j++) {
+                let dx = i - x
+                let dy = j - y
+                let distance = Math.floor(Math.sqrt(dx * dx + dy * dy))
+                if (distance < radius) {
+                    this.setTile(i, j)
+                }
+            }
+        }
+    }
+
     updatePhysicsBody (x, y) {
         let bodies = []
         let screenX = x * 8 * CHUNK_SIZE

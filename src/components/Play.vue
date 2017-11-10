@@ -69,7 +69,7 @@
                     ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
                 }
 
-                this.$game.createEntity('Tool')
+                this.$tool = this.$game.createEntity('Tool')
 
                 this.$game.start()
             })
@@ -109,11 +109,12 @@
         },
 
         methods: {
-            onClick ({ clientX, clientY, target }) {
-                let viewBox = this.$game.camera.viewBox()
-                let x = ((clientX - target.offsetLeft) / this.$game.stage.scale.x) + viewBox.x
-                let y = ((clientY - target.offsetTop) / this.$game.stage.scale.y) + viewBox.y
-                this.$map.setTile(Math.floor(x / 8), Math.floor(y / 8))
+            onClick () {
+                let targetPosition = this.$game.screenToWorldPosition(
+                    this.$game.mousePosition.x,
+                    this.$game.mousePosition.y
+                )
+                this.$map.dig(targetPosition.x / 8, targetPosition.y / 8, this.$tool.size)
             }
         },
 

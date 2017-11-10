@@ -5,7 +5,7 @@ export default class Tool extends Entity {
     constructor (app) {
         super(app)
 
-        this.toolSize = 3
+        this.size = 3
         this.sprite = new Graphics()
         this.updateToolSprite()
 
@@ -15,7 +15,7 @@ export default class Tool extends Entity {
     updateToolSprite () {
         this.sprite.clear()
         this.sprite.lineStyle(1, 0x000000)
-        this.sprite.drawCircle(0, 0, this.toolSize * 4)
+        this.sprite.drawCircle(0, 0, this.size * 4)
     }
 
     render (t) {
