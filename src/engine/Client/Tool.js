@@ -40,15 +40,15 @@ export default class Tool extends Trait {
             this.app.mousePosition.y
         )
 
-        let dx = targetPosition.x - entity.position.x
-        let dy = targetPosition.y - entity.position.y
+        let dx = targetPosition.x - entity.sprite.position.x
+        let dy = targetPosition.y - entity.sprite.position.y
         let distance = Math.sqrt(dx * dx + dy * dy)
 
         let toolX = targetPosition.x
         let toolY = targetPosition.y
         if (distance + ((this.size / 2) * 8) > (8 * 8)) {
-            toolX = ((dx / distance) * ((8 - (this.size / 2)) * 8)) + entity.position.x
-            toolY = ((dy / distance) * ((8 - (this.size / 2)) * 8)) + entity.position.y
+            toolX = ((dx / distance) * ((8 - (this.size / 2)) * 8)) + entity.sprite.position.x
+            toolY = ((dy / distance) * ((8 - (this.size / 2)) * 8)) + entity.sprite.position.y
         }
         this.position = new Point(toolX, toolY)
 
