@@ -18,11 +18,14 @@
     import GameEngine from '../engine/Client/GameEngine'
     import MapEntity from '../engine/Client/Map'
     import PlayerEntity from '../engine/Client/Player'
+    import BallEntity from '../engine/Client/Ball'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
+    import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
+    import BallImage from '../assets/texture/ball.png'
 
     export default {
         name: 'GamePlay',
@@ -30,17 +33,26 @@
         mounted () {
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
+            Factory.add('Ball', BallEntity)
 
             this.$game = new GameEngine(new Loop(20), this.$el)
             this.$game.camera.scale.set(2)
 
             this.$game.add('block', BlockImage)
             this.$game.add('player', PlayerImage)
+            this.$game.add('ball', BallImage)
 
             this.$game.load().then(() => {
                 this.$map = this.$game.createEntity('Map')
+
                 this.$player = this.$game.createEntity('Player')
                 this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
+
+                for (let i = 0; i < 10; i++) {
+                    let ball = this.$game.createEntity('Ball')
+                    ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
+                }
+
                 this.$game.start()
             })
 
