@@ -10,11 +10,24 @@ export default class Tool extends Entity {
         this.updateToolSprite()
 
         this.app.stage.addChild(this.sprite)
+
+        window.document.body.addEventListener('wheel', this._handleMouseWheel.bind(this))
+    }
+
+    _handleMouseWheel (evt) {
+        if (evt.deltaY > 0) {
+            this.size++
+        }
+        if (evt.deltaY < 0) {
+            this.size--
+        }
+        this.size = Math.max(1, Math.min(4, this.size))
+        this.updateToolSprite()
     }
 
     updateToolSprite () {
         this.sprite.clear()
-        this.sprite.lineStyle(1, 0x000000)
+        this.sprite.lineStyle(0.5, 0x000000)
         this.sprite.drawCircle(0, 0, this.size * 4)
     }
 
