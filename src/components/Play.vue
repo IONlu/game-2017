@@ -1,14 +1,28 @@
 <template>
-    <div
-        class="component-play"
-        @click="onClick"
-    ></div>
+    <div class="component-play">
+        <div
+            class="renderer"
+            ref="renderer"
+            @click="onClick"
+        ></div>
+    </div>
 </template>
 
 <style>
     .component-play {
         height: 100%;
         width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #000;
+    }
+
+    .component-play .renderer {
+        height: 100%;
+        width: 100%;
+        max-width: 1024px;
+        max-height: 768px;
     }
 </style>
 
@@ -35,7 +49,7 @@
             Factory.add('Player', PlayerEntity)
             Factory.add('Ball', BallEntity)
 
-            this.$game = new GameEngine(new Loop(20), this.$el)
+            this.$game = new GameEngine(new Loop(20), this.$refs.renderer)
             this.$game.camera.scale.set(2)
 
             this.$game.add('block', BlockImage)
@@ -91,10 +105,10 @@
         },
 
         methods: {
-            onClick ({ clientX, clientY }) {
+            onClick ({ clientX, clientY, target }) {
                 let viewBox = this.$game.camera.viewBox()
-                let x = (clientX / this.$game.stage.scale.x) + viewBox.x
-                let y = (clientY / this.$game.stage.scale.y) + viewBox.y
+                let x = ((clientX - target.offsetLeft) / this.$game.stage.scale.x) + viewBox.x
+                let y = ((clientY - target.offsetTop) / this.$game.stage.scale.y) + viewBox.y
                 this.$map.setTile(Math.floor(x / 8), Math.floor(y / 8))
             }
         },

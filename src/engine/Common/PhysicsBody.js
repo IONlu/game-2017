@@ -55,10 +55,14 @@ export default class PhysicsBody extends Trait {
         entity.position.set(this.body.position.x, this.body.position.y)
         entity.rotation = this.body.angle
 
-        if (this.body.velocity.x > 0) {
+        let targetPosition = this.app.screenToWorldPosition(
+            this.app.mousePosition.x,
+            this.app.mousePosition.y
+        )
+        if (targetPosition.x - this.body.position.x > 0) {
             entity.sprite.scale.x = Math.abs(entity.sprite.scale.x)
         }
-        if (this.body.velocity.x < 0) {
+        if (targetPosition.x - this.body.position.x < 0) {
             entity.sprite.scale.x = -Math.abs(entity.sprite.scale.x)
         }
     }
