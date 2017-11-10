@@ -6,14 +6,26 @@ export default class PhysicsBody extends Trait {
         super()
         this.app = app
         this.engine = engine
-        this.body = Bodies.rectangle(0, -1000, 12, 28, {
+        this.body = Bodies.fromVertices(0, -1000, [
+            { x: -6, y: -14 },
+            { x: 6, y: -14 },
+            { x: 6, y: 10 },
+            { x: 2, y: 14 },
+            { x: -2, y: 14 },
+            { x: -6, y: 10 }
+        ], {
             inertia: Infinity,
-            sleepThreshold: Infinity
+            sleepThreshold: Infinity,
+            mass: 2,
+            friction: 0.002
         })
 
         World.add(this.engine.world, this.body)
 
-        this.isColliding = false
+        this.isCollidingLeft = false
+        this.isCollidingRight = false
+        this.isCollidingBottom = false
+
         Events.on(this.engine.engine, 'collisionStart', this._handleCollision.bind(this))
         Events.on(this.engine.engine, 'collisionActive', this._handleCollision.bind(this))
     }
@@ -21,26 +33,24 @@ export default class PhysicsBody extends Trait {
     update (entity, updateData) {
         super.update(entity, updateData)
 
-        if (this.app.keyboard.isDown(37)) {
+        if (this.app.keyboard.isDown(37) && !this.isCollidingLeft) {
             Body.setVelocity(this.body, {
-                x: -4,
+                x: Math.max(-4, this.body.velocity.x - 1),
                 y: this.body.velocity.y
             })
         }
-        if (this.app.keyboard.isDown(39)) {
+        if (this.app.keyboard.isDown(39) && !this.isCollidingRight) {
             Body.setVelocity(this.body, {
-                x: 4,
+                x: Math.min(4, this.body.velocity.x + 1),
                 y: this.body.velocity.y
             })
         }
-        if (this.app.keyboard.isDown(38) && this.isColliding) {
+        if (this.app.keyboard.isDown(38) && this.isCollidingBottom) {
             Body.setVelocity(this.body, {
                 x: this.body.velocity.x,
                 y: Math.max(-5, this.body.velocity.y - 5)
             })
         }
-
-        console.log(this.body.velocity.x)
 
         entity.position.set(this.body.position.x, this.body.position.y)
         entity.rotation = this.body.angle
@@ -54,9 +64,27 @@ export default class PhysicsBody extends Trait {
     }
 
     _handleCollision (evt) {
-        this.isColliding = !!evt.pairs.find(collision => {
-            return !collision.bodyA.isSensor && !collision.bodyB.isSensor &&
-                (collision.bodyA === this.body || collision.bodyB === this.body)
+        let collisions = evt.pairs.filter(collision => {
+            if (collision.bodyA !== this.body && collision.bodyB !== this.body) {
+                return false
+            }
+            return !collision.bodyA.isSensor && !collision.bodyB.isSensor
+        })
+
+        this.isCollidingLeft = false
+        this.isCollidingRight = false
+        this.isCollidingBottom = false
+
+        collisions.forEach(({ collision }) => {
+            if (Math.abs(collision.tangent.x) > 0) {
+                this.isCollidingBottom = true
+            }
+            if (Math.abs(collision.tangent.y) > 0 && this.body.velocity.x > 0) {
+                this.isCollidingRight = true
+            }
+            if (Math.abs(collision.tangent.y) > 0 && this.body.velocity.x < 0) {
+                this.isCollidingLeft = true
+            }
         })
     }
 
