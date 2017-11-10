@@ -23,7 +23,7 @@
         width: 100%;
         max-width: 1024px;
         max-height: 768px;
-        cursor: none;
+        cursor: crosshair;
     }
 </style>
 
@@ -78,11 +78,7 @@
 
         methods: {
             onClick () {
-                let targetPosition = this.$game.screenToWorldPosition(
-                    this.$game.mousePosition.x,
-                    this.$game.mousePosition.y
-                )
-                this.$map.dig(targetPosition.x / 8, targetPosition.y / 8, this.$tool.size)
+                this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
             }
         },
 

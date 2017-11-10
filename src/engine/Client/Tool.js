@@ -1,11 +1,12 @@
 import { Trait } from '../Common/Entity'
-import { Graphics } from 'pixi.js'
+import { Graphics, Point } from 'pixi.js'
 
 export default class Tool extends Trait {
     constructor (app) {
         super()
         this.app = app
         this.size = 3
+        this.position = new Point()
         this.sprite = new Graphics()
         this.updateToolSprite()
 
@@ -39,6 +40,18 @@ export default class Tool extends Trait {
             this.app.mousePosition.y
         )
 
-        this.sprite.position.set(targetPosition.x, targetPosition.y)
+        let dx = targetPosition.x - entity.position.x
+        let dy = targetPosition.y - entity.position.y
+        let distance = Math.sqrt(dx * dx + dy * dy)
+
+        let toolX = targetPosition.x
+        let toolY = targetPosition.y
+        if (distance + ((this.size / 2) * 8) > (8 * 8)) {
+            toolX = ((dx / distance) * ((8 - (this.size / 2)) * 8)) + entity.position.x
+            toolY = ((dy / distance) * ((8 - (this.size / 2)) * 8)) + entity.position.y
+        }
+        this.position = new Point(toolX, toolY)
+
+        this.sprite.position.set(toolX, toolY)
     }
 }
