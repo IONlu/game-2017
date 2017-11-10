@@ -38,7 +38,7 @@ export default class GameEngine extends GameEngineCommon {
         this.stage.addChild(this.viewBoxGraphics)
 
         this.mousePosition = new PIXI.Point()
-        this.containerNode.addEventListener('mousemove', this._handleMouseMove.bind(this))
+        window.document.body.addEventListener('mousemove', this._handleMouseMove.bind(this))
     }
 
     createLayer (index) {
@@ -96,8 +96,8 @@ export default class GameEngine extends GameEngineCommon {
 
     _handleMouseMove ({ clientX, clientY, target }) {
         this.mousePosition = new PIXI.Point(
-            clientX - target.offsetLeft,
-            clientY - target.offsetTop
+            clientX - this.containerNode.offsetLeft,
+            clientY - this.containerNode.offsetTop
         )
     }
 }
