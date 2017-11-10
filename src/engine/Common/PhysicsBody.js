@@ -45,7 +45,7 @@ export default class PhysicsBody extends Trait {
                 y: this.body.velocity.y
             })
         }
-        if (this.app.keyboard.isDown(38) && this.isCollidingBottom) {
+        if ((this.app.keyboard.isDown(38) || this.app.keyboard.isDown(32)) && this.isCollidingBottom) {
             Body.setVelocity(this.body, {
                 x: this.body.velocity.x,
                 y: Math.max(-5, this.body.velocity.y - 5)
