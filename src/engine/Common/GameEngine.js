@@ -31,13 +31,7 @@ export default class GameEngine {
     }
 
     destroyEntity (entity) {
-        // call entity onDestroy function
-        if (entity.onDestroy) {
-            entity.onDestroy()
-        }
-
-        // destroy body if any
-        this.physics.destroyBody(entity)
+        entity.destroy()
 
         // remove entity from entites array
         var index = this.entities.indexOf(entity)

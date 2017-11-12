@@ -20,12 +20,19 @@ export default class Player extends Entity {
     render (t) {
         super.render(t)
 
+        if (!this.old) {
+            return
+        }
+
         this.sprite.position.set(
             this.old.position.x + (t * (this.position.x - this.old.position.x)),
             this.old.position.y + (t * (this.position.y - this.old.position.y))
         )
         this.sprite.rotation = this.old.rotation + (t * (this.rotation - this.old.rotation))
+    }
 
-        this.app.camera.position.set(this.sprite.x, this.sprite.y)
+    destroy () {
+        super.destroy()
+        this.app.stage.removeChild(this.sprite)
     }
 }

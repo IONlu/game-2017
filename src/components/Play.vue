@@ -35,6 +35,8 @@
     import PlayerEntity from '../engine/Client/Player'
     import BallEntity from '../engine/Client/Ball'
     import ToolTrait from '../engine/Client/Tool'
+    import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
+    import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -43,10 +45,14 @@
     import PlayerImage from '../assets/texture/player.png'
     import BallImage from '../assets/texture/ball.png'
 
+    import io from 'socket.io-client'
+
     export default {
         name: 'GamePlay',
 
         mounted () {
+            let socket = io.connect('http://localhost:4200')
+
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
             Factory.add('Ball', BallEntity)
@@ -63,6 +69,8 @@
 
                 this.$player = this.$game.createEntity('Player')
                 this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
+                this.$player.addTrait(new NetworkSendTrait(socket))
+                this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
 
                 for (let i = 0; i < 10; i++) {
                     let ball = this.$game.createEntity('Ball')
@@ -73,6 +81,31 @@
                 this.$player.addTrait(this.$tool)
 
                 this.$game.start()
+
+                // remote players
+                let remotePlayers = {}
+                socket.on('update', playerData => {
+                    Object.keys(remotePlayers).forEach(key => {
+                        if (key === socket.id) {
+                            return
+                        }
+                        if (!playerData.hasOwnProperty(key)) {
+                            this.$game.destroyEntity(remotePlayers[key])
+                            delete remotePlayers[key]
+                        }
+                    })
+                    Object.keys(playerData).forEach(key => {
+                        if (key === socket.id) {
+                            return
+                        }
+                        if (!remotePlayers.hasOwnProperty(key)) {
+                            remotePlayers[key] = this.$game.createEntity('Player')
+                        } else {
+                            remotePlayers[key].position.set(playerData[key][0], playerData[key][1])
+                            remotePlayers[key].rotation = playerData[key][2]
+                        }
+                    })
+                })
             })
         },
 
