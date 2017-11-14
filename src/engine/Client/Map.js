@@ -1,11 +1,11 @@
-import CommonMap from '../Common/Map'
-import { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle } from 'pixi.js'
-import { CHUNK_SIZE } from '@/config'
-import BlockData from '@/assets/texture/block.json'
+const { Map: CommonMap } = require('../Common/Map')
+const { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle } = require('pixi.js')
+const { CHUNK_SIZE } = require('../../config')
+const BlockData = require('../../assets/texture/block.json')
 
 const TEXTURE_INDEX = Object.keys(BlockData.frames)
 
-export default class Map extends CommonMap {
+exports.Map = class Map extends CommonMap {
     constructor (app) {
         super(app)
 
