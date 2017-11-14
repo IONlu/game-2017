@@ -1,4 +1,4 @@
-export default class Keyboard {
+exports.Keyboard = class Keyboard {
     constructor (node) {
         this.node = node
         this.current = []

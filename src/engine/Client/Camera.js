@@ -1,6 +1,6 @@
-import { Point } from 'pixi.js'
+const { Point } = require('pixi.js')
 
-export default class Camera {
+exports.Camera = class Camera {
     constructor (app) {
         this.app = app
         this.position = new Point(0, 0)

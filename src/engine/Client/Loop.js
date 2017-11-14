@@ -1,6 +1,6 @@
-import EventEmitter from 'events'
+const EventEmitter = require('events')
 
-export default class Loop extends EventEmitter {
+exports.Loop = class Loop extends EventEmitter {
     constructor (fps) {
         super()
 

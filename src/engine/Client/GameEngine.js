@@ -1,9 +1,9 @@
-import GameEngineCommon from '../Common/GameEngine'
-import Keyboard from './Keyboard'
-import Camera from './Camera'
-import * as PIXI from 'pixi.js'
+const { GameEngine: GameEngineCommon } = require('../Common/GameEngine')
+const { Keyboard } = require('./Keyboard')
+const { Camera } = require('./Camera')
+const PIXI = require('pixi.js')
 
-export default class GameEngine extends GameEngineCommon {
+exports.GameEngine = class GameEngine extends GameEngineCommon {
     constructor (loop, containerNode) {
         super(loop)
 
