@@ -2,6 +2,7 @@ const express = require('express')
 const socketio = require('socket.io')
 const http = require('http')
 const path = require('path')
+const { generateData } = require('./engine/Common/Map/Chunk')
 
 const app = express()
 const server = http.createServer(app)
@@ -11,6 +12,16 @@ const io = socketio(server)
 app.use(express.static(path.join(__dirname, '..', 'dist')))
 app.get('/', (req, res, next) => {
     res.sendFile([ __dirname, 'index.html' ])
+})
+
+app.get('/chunk/:x/:y', (req, res, next) => {
+    generateData(parseFloat(req.params.x), parseFloat(req.params.y))
+        .then(chunkData => {
+            res.json({
+                version: 1,
+                data: chunkData
+            })
+        })
 })
 
 let playerData = {}

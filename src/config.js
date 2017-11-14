@@ -1,1 +1,1 @@
-export const CHUNK_SIZE = 32
+exports.CHUNK_SIZE = 32
