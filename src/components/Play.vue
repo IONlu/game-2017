@@ -51,7 +51,7 @@
         name: 'GamePlay',
 
         mounted () {
-            let socket = io.connect('http://localhost:4200')
+            let socket = io.connect('//' + location.hostname + (location.port ? ':' + location.port : ''))
 
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
