@@ -8,6 +8,7 @@
         "dev": "node build/dev-server.js",
         "start": "npm run dev",
         "build": "node build/build.js",
+        "build-server": "node build/build-server.js",
         "lint": "eslint --ext .js,.vue src"
     },
     "dependencies": {
@@ -47,6 +48,8 @@
         "extract-text-webpack-plugin": "^3.0.2",
         "file-loader": "^1.1.5",
         "friendly-errors-webpack-plugin": "^1.6.1",
+        "fs-extra": "^4.0.2",
+        "glob": "^7.1.2",
         "html-webpack-plugin": "^2.30.1",
         "http-proxy-middleware": "^0.17.4",
         "opn": "^5.1.0",
