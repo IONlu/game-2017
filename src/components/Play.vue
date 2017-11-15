@@ -28,18 +28,18 @@
 </style>
 
 <script>
-    import { Factory } from '../engine/Common/Factory'
-    import { Loop } from '../engine/Client/Loop'
-    import { GameEngine } from '../engine/Client/GameEngine'
-    import { Map as MapEntity } from '../engine/Client/Map'
-    import { Player as PlayerEntity } from '../engine/Client/Player'
-    import { Ball as BallEntity } from '../engine/Client/Ball'
-    import { Tool as ToolTrait } from '../engine/Client/Tool'
-    import { Send as NetworkSendTrait } from '../engine/Common/Trait/Network/Send'
-    import { UpdateCamera as UpdateCameraTrait } from '../engine/Client/Trait/UpdateCamera'
+    import Factory from '../engine/Common/Factory'
+    import Loop from '../engine/Client/Loop'
+    import GameEngine from '../engine/Client/GameEngine'
+    import MapEntity from '../engine/Client/Map'
+    import PlayerEntity from '../engine/Client/Player'
+    import BallEntity from '../engine/Client/Ball'
+    import ToolTrait from '../engine/Client/Tool'
+    import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
+    import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
 
-    import { PhysicsBody } from '../engine/Common/PhysicsBody'
-    import { PhysicsBodyBall } from '../engine/Common/PhysicsBodyBall'
+    import PhysicsBody from '../engine/Common/PhysicsBody'
+    import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'

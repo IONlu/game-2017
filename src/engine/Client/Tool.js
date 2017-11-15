@@ -1,7 +1,7 @@
-const { Trait } = require('../Common/Entity')
-const { Graphics, Point } = require('pixi.js')
+import { Trait } from '../Common/Entity'
+import { Graphics, Point } from 'pixi.js'
 
-exports.Tool = class Tool extends Trait {
+export default class Tool extends Trait {
     constructor (app) {
         super()
         this.app = app

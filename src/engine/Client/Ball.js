@@ -1,7 +1,7 @@
-const { Entity } = require('./Entity')
-const { Sprite, Texture } = require('pixi.js')
+import Entity from './Entity'
+import { Sprite, Texture } from 'pixi.js'
 
-exports.Player = class Player extends Entity {
+export default class Player extends Entity {
     constructor (app) {
         super(app)
 

@@ -1,9 +1,9 @@
-const Chance = require('chance')
-const SimplexNoise = require('simplex-noise')
-const { CHUNK_SIZE } = require('../../../config')
-const BlockData = require('../../../assets/texture/block.json')
+import Chance from 'chance'
+import SimplexNoise from 'simplex-noise'
+import { CHUNK_SIZE } from '../../../config'
+import BlockData from '../../../assets/texture/block.json'
 
-exports.default = class Chunk {
+export default class Chunk {
     constructor (size) {
         this.size = size
         this.length = size * size
@@ -54,7 +54,7 @@ for (let name in BlockData.frames) {
     BlockNoise[name] = new SimplexNoise(random(SEED + '::' + name.toUpperCase()))
 }
 
-exports.generateData = (x, y) => {
+export const generateData = (x, y) => {
     let height = []
     for (let i = 0; i < CHUNK_SIZE; i++) {
         let valueA = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 512, 0) * 20

@@ -1,6 +1,6 @@
-const { Trait } = require('../../Common/Entity')
+import { Trait } from '../../Common/Entity'
 
-exports.UpdateCamera = class UpdateCamera extends Trait {
+export default class UpdateCamera extends Trait {
     constructor (camera) {
         super()
         this.camera = camera

@@ -1,6 +1,6 @@
-const { Common: CommonEntity } = require('../Common/Entity')
+import CommonEntity from '../Common/Entity'
 
-exports.Entity = class Entity extends CommonEntity {
+export default class Entity extends CommonEntity {
     render (t) {
         this.traits.forEach(trait => {
             trait.render(this, t)
