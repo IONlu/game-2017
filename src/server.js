@@ -9,9 +9,9 @@ const server = http.createServer(app)
 const io = socketio(server)
 
 // client files
-app.use(express.static(path.join(__dirname, '..', 'dist')))
+app.use(express.static(path.resolve(__dirname, '../public')))
 app.get('/', (req, res, next) => {
-    res.sendFile([ __dirname, 'index.html' ])
+    res.sendFile(path.resolve(__dirname, '../public/index.html'))
 })
 
 app.get('/chunk/:x/:y', (req, res, next) => {

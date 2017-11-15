@@ -11,15 +11,7 @@ fs.remove(to)
 .then(() => {
     glob(path.resolve(to, '**/*.js'), (err, files) => {
         files.forEach(file => {
-            let { code } = transformFileSync(file, {
-                presets: [
-                    ['env', {
-                        targets: {
-                            node: '6.10'
-                        }
-                    }]
-                ]
-            })
+            let { code } = transformFileSync(file)
             fs.outputFile(file, code)
         })
     })

@@ -51,7 +51,10 @@
         name: 'GamePlay',
 
         mounted () {
-            let socket = io.connect('//' + location.hostname + (location.port ? ':' + location.port : ''))
+            let socket = io.connect(
+                process.env.SOCKET_SERVER ||
+                ('//' + location.hostname + (location.port ? ':' + location.port : ''))
+            )
 
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
