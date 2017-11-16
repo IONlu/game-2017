@@ -1,6 +1,11 @@
 <template>
     <div class="component-play">
         <div
+            class="loading"
+            v-show="isLoading">
+            <div>loading ...</div>
+        </div>
+        <div
             class="renderer"
             ref="renderer"
             @click="onClick"
@@ -16,6 +21,7 @@
         align-items: center;
         justify-content: center;
         background-color: #000;
+        color: #FFF;
     }
 
     .component-play .renderer {
@@ -24,6 +30,16 @@
         max-width: 1024px;
         max-height: 768px;
         cursor: crosshair;
+    }
+
+    .component-play .loading {
+        position: absolute;
+        background-color: #000;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
 
@@ -49,6 +65,12 @@
 
     export default {
         name: 'GamePlay',
+
+        data () {
+            return {
+                isLoading: true
+            }
+        },
 
         mounted () {
             this.$socket = io.connect(
@@ -109,6 +131,8 @@
                         }
                     })
                 })
+
+                this.isLoading = false
             })
         },
 
