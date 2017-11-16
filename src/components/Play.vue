@@ -53,6 +53,7 @@
     import ToolTrait from '../engine/Client/Tool'
     import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
     import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
+    import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -89,51 +90,58 @@
             this.$game.add('player', PlayerImage)
             this.$game.add('ball', BallImage)
 
-            this.$game.load().then(() => {
-                this.$map = this.$game.createEntity('Map')
+            this.$game.load()
+                .then(() => {
+                    this.$map = this.$game.createEntity('Map')
 
-                this.$player = this.$game.createEntity('Player')
-                this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
-                this.$player.addTrait(new NetworkSendTrait(this.$socket))
-                this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
+                    this.$player = this.$game.createEntity('Player')
+                    this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
+                    this.$player.addTrait(new NetworkSendTrait(this.$socket))
+                    this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
+                    this.$player.addTrait(new ChunkLoaderTrait(this.$map))
 
-                for (let i = 0; i < 10; i++) {
-                    let ball = this.$game.createEntity('Ball')
-                    ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
-                }
+                    for (let i = 0; i < 10; i++) {
+                        let ball = this.$game.createEntity('Ball')
+                        ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
+                    }
 
-                this.$tool = new ToolTrait(this.$game)
-                this.$player.addTrait(this.$tool)
+                    this.$tool = new ToolTrait(this.$game)
+                    this.$player.addTrait(this.$tool)
 
-                this.$game.start()
-
-                // remote players
-                let remotePlayers = {}
-                this.$socket.on('update', playerData => {
-                    Object.keys(remotePlayers).forEach(key => {
-                        if (key === this.$socket.id) {
-                            return
-                        }
-                        if (!playerData.hasOwnProperty(key)) {
-                            this.$game.destroyEntity(remotePlayers[key])
-                            delete remotePlayers[key]
-                        }
+                    // remote players
+                    let remotePlayers = {}
+                    this.$socket.on('update', playerData => {
+                        Object.keys(remotePlayers).forEach(key => {
+                            if (key === this.$socket.id) {
+                                return
+                            }
+                            if (!playerData.hasOwnProperty(key)) {
+                                this.$game.destroyEntity(remotePlayers[key])
+                                delete remotePlayers[key]
+                            }
+                        })
+                        Object.keys(playerData).forEach(key => {
+                            if (key === this.$socket.id) {
+                                return
+                            }
+                            if (!remotePlayers.hasOwnProperty(key)) {
+                                remotePlayers[key] = this.$game.createEntity('Player')
+                            } else {
+                                remotePlayers[key].position.set(playerData[key][0], playerData[key][1])
+                                remotePlayers[key].rotation = playerData[key][2]
+                            }
+                        })
                     })
-                    Object.keys(playerData).forEach(key => {
-                        if (key === this.$socket.id) {
-                            return
-                        }
-                        if (!remotePlayers.hasOwnProperty(key)) {
-                            remotePlayers[key] = this.$game.createEntity('Player')
-                        } else {
-                            remotePlayers[key].position.set(playerData[key][0], playerData[key][1])
-                            remotePlayers[key].rotation = playerData[key][2]
-                        }
+
+                    // preload chunks
+                    return this.$map.loadChunksByPosition(this.$player.position.x, this.$player.position.y)
+                })
+                .then(() => {
+                    this.isLoading = false
+                    this.$nextTick(() => {
+                        this.$game.start()
                     })
                 })
-
-                this.isLoading = false
-            })
         },
 
         methods: {

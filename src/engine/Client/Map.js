@@ -241,17 +241,6 @@ export default class Map extends CommonMap {
     render (t) {
         let viewBox = this.app.camera.viewBox()
 
-        // load chunks
-        var chunkX = Math.floor(viewBox.x / (8 * CHUNK_SIZE))
-        var chunkX2 = Math.ceil((viewBox.x + viewBox.width) / (8 * CHUNK_SIZE)) + 1
-        var chunkY = Math.floor(viewBox.y / (8 * CHUNK_SIZE))
-        var chunkY2 = Math.ceil((viewBox.y + viewBox.height) / (8 * CHUNK_SIZE)) + 1
-        for (let x = chunkX; x < chunkX2; x++) {
-            for (let y = chunkY; y < chunkY2; y++) {
-                this.loadChunk(x, y)
-            }
-        }
-
         Object.keys(this.chunks).forEach(key => {
             let { x, y, chunk } = this.chunks[key]
 

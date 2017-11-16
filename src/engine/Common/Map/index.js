@@ -20,7 +20,7 @@ export default class Map extends Entity {
             y,
             chunk: new Chunk(CHUNK_SIZE)
         }
-        axios.get('//localhost:4200/chunk/' + x + '/' + y)
+        return axios.get('//localhost:4200/chunk/' + x + '/' + y)
             .then(response => {
                 this._handleChunkData(x, y, response.data.data)
             })
@@ -42,6 +42,23 @@ export default class Map extends Entity {
 
         // physics
         this.updatePhysicsBody(x, y)
+    }
+
+    loadChunksByPosition (x, y, distance = 1000) {
+        // bounding box
+        var chunkX = Math.floor((x - distance) / (8 * CHUNK_SIZE))
+        var chunkX2 = Math.ceil((x + distance) / (8 * CHUNK_SIZE)) + 1
+        var chunkY = Math.floor((y - distance) / (8 * CHUNK_SIZE))
+        var chunkY2 = Math.ceil((y + distance) / (8 * CHUNK_SIZE)) + 1
+
+        // load chunks
+        let chunksPromise = []
+        for (let x = chunkX; x < chunkX2; x++) {
+            for (let y = chunkY; y < chunkY2; y++) {
+                chunksPromise.push(this.loadChunk(x, y))
+            }
+        }
+        return Promise.all(chunksPromise)
     }
 
     getTile (x, y) {
