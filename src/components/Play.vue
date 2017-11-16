@@ -51,7 +51,7 @@
         name: 'GamePlay',
 
         mounted () {
-            let socket = io.connect(
+            this.$socket = io.connect(
                 process.env.SOCKET_SERVER ||
                 ('//' + location.hostname + (location.port ? ':' + location.port : ''))
             )
@@ -72,7 +72,7 @@
 
                 this.$player = this.$game.createEntity('Player')
                 this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
-                this.$player.addTrait(new NetworkSendTrait(socket))
+                this.$player.addTrait(new NetworkSendTrait(this.$socket))
                 this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
 
                 for (let i = 0; i < 10; i++) {
@@ -87,9 +87,9 @@
 
                 // remote players
                 let remotePlayers = {}
-                socket.on('update', playerData => {
+                this.$socket.on('update', playerData => {
                     Object.keys(remotePlayers).forEach(key => {
-                        if (key === socket.id) {
+                        if (key === this.$socket.id) {
                             return
                         }
                         if (!playerData.hasOwnProperty(key)) {
@@ -98,7 +98,7 @@
                         }
                     })
                     Object.keys(playerData).forEach(key => {
-                        if (key === socket.id) {
+                        if (key === this.$socket.id) {
                             return
                         }
                         if (!remotePlayers.hasOwnProperty(key)) {
@@ -119,7 +119,7 @@
         },
 
         beforeDestroy () {
-
+            this.$socket.close()
         }
     }
 </script>
