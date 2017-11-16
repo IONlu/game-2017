@@ -2,11 +2,14 @@ import express from 'express'
 import socketio from 'socket.io'
 import http from 'http'
 import path from 'path'
+import cors from 'cors'
 import { generateData } from './engine/Common/Map/Chunk'
 
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
+
+app.use(cors())
 
 // client files
 app.use(express.static(path.resolve(__dirname, '../public')))

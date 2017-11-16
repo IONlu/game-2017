@@ -46,7 +46,7 @@ export default class Map extends CommonMap {
 
                 let textureIndex = tile || neighbours[6] || neighbours[1]
                 let tileTexture = Texture.EMPTY
-                if (textureIndex !== undefined && TEXTURE_INDEX[textureIndex - 1]) {
+                if (textureIndex !== null && TEXTURE_INDEX[textureIndex - 1]) {
                     let maskIndex = this.getTileMaskIndex(tile, neighbours)
                     tileTexture = this.maskedTextures[TEXTURE_INDEX[textureIndex - 1]][maskIndex]
                 }
@@ -143,18 +143,18 @@ export default class Map extends CommonMap {
 
     getTileMaskIndex (tile, neighbours) {
         let index = 0
-        if (tile !== undefined) {
+        if (tile !== null) {
             index += 16
-            if (neighbours[0] !== undefined || neighbours[1] !== undefined || neighbours[3] !== undefined) {
+            if (neighbours[0] !== null || neighbours[1] !== null || neighbours[3] !== null) {
                 index += 8
             }
-            if (neighbours[1] !== undefined || neighbours[2] !== undefined || neighbours[4] !== undefined) {
+            if (neighbours[1] !== null || neighbours[2] !== null || neighbours[4] !== null) {
                 index += 4
             }
-            if (neighbours[4] !== undefined || neighbours[6] !== undefined || neighbours[7] !== undefined) {
+            if (neighbours[4] !== null || neighbours[6] !== null || neighbours[7] !== null) {
                 index += 2
             }
-            if (neighbours[3] !== undefined || neighbours[5] !== undefined || neighbours[6] !== undefined) {
+            if (neighbours[3] !== null || neighbours[5] !== null || neighbours[6] !== null) {
                 index += 1
             }
         } else {

@@ -1,45 +1,14 @@
 import Entity from '../Entity'
 import Chunk from './Chunk'
-import ChunkWorker from './Chunk.worker.js'
 import { CHUNK_SIZE } from '@/config'
 import { Bodies, World, Body } from 'matter-js'
+import axios from 'axios'
 
 export default class Map extends Entity {
     constructor (app) {
         super(app)
 
         this.chunks = {}
-
-        this.initWorkers(4)
-    }
-
-    initWorkers (count) {
-        this.workers = []
-        this.nextWorker = 0
-        for (let i = 0; i < count; i++) {
-            let worker = new ChunkWorker()
-            worker.addEventListener('message', evt => {
-                let x = evt.data.x
-                let y = evt.data.y
-
-                if (!this.chunks.hasOwnProperty(x + ';' + y)) {
-                    return
-                }
-                this.chunks[x + ';' + y].chunk.load(evt.data.chunk)
-
-                for (let i = x - 1; i < x + 2; i++) {
-                    for (let j = y - 1; j < y + 2; j++) {
-                        if (this.chunks.hasOwnProperty(i + ';' + j)) {
-                            this.chunks[i + ';' + j].chunk.isDirty = true
-                        }
-                    }
-                }
-
-                // physics
-                this.updatePhysicsBody(x, y)
-            }, false)
-            this.workers.push(worker)
-        }
     }
 
     loadChunk (x, y) {
@@ -51,15 +20,35 @@ export default class Map extends Entity {
             y,
             chunk: new Chunk(CHUNK_SIZE)
         }
-        this.workers[this.nextWorker].postMessage({ x, y })
-        this.nextWorker = (this.nextWorker + 1) % this.workers.length
+        axios.get('//localhost:4200/chunk/' + x + '/' + y)
+            .then(response => {
+                this._handleChunkData(x, y, response.data.data)
+            })
+    }
+
+    _handleChunkData (x, y, chunkData) {
+        if (!this.chunks.hasOwnProperty(x + ';' + y)) {
+            return
+        }
+        this.chunks[x + ';' + y].chunk.load(chunkData)
+
+        for (let i = x - 1; i < x + 2; i++) {
+            for (let j = y - 1; j < y + 2; j++) {
+                if (this.chunks.hasOwnProperty(i + ';' + j)) {
+                    this.chunks[i + ';' + j].chunk.isDirty = true
+                }
+            }
+        }
+
+        // physics
+        this.updatePhysicsBody(x, y)
     }
 
     getTile (x, y) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
         if (!this.chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
-            return undefined
+            return null
         }
         return this.chunks[chunkX + ';' + chunkY].chunk.get((CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE, (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE)
     }
@@ -76,11 +65,11 @@ export default class Map extends Entity {
         return neighbours
     }
 
-    setTile (x, y, tile) {
+    setTile (x, y, tile = null) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
         if (!this.chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
-            return undefined
+            return null
         }
         let tileData = this.chunks[chunkX + ';' + chunkY].chunk.set((CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE, (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE, tile)
         this.updatePhysicsBody(chunkX, chunkY)
