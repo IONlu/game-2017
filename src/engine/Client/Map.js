@@ -58,6 +58,9 @@ export default class Map extends CommonMap {
 
         this.app.renderer.render(this.chunkContainer, texture)
         texture.requiresUpdate = true
+
+        // update physics
+        this.updatePhysicsBody(x, y)
     }
 
     generateTileMaskTextures () {
@@ -244,22 +247,26 @@ export default class Map extends CommonMap {
         Object.keys(this.chunks).forEach(key => {
             let { x, y, chunk } = this.chunks[key]
 
-            // draw chunks if dirty
-            if (chunk.isDirty) {
-                this.drawChunk(x, y)
-            }
-
-            // hide chunks outside of viewport
             let chunkBox = {
                 x: x * 8 * CHUNK_SIZE,
                 y: y * 8 * CHUNK_SIZE,
                 width: 8 * CHUNK_SIZE,
                 height: 8 * CHUNK_SIZE
             }
-            this.chunks[key].sprite.visible = chunkBox.x < viewBox.x + viewBox.width &&
+            let visible = chunkBox.x < viewBox.x + viewBox.width &&
                 chunkBox.x + chunkBox.width > viewBox.x &&
                 chunkBox.y < viewBox.y + viewBox.height &&
                 chunkBox.y + chunkBox.height > viewBox.y
+
+            // draw chunks if dirty
+            if (visible && chunk.isDirty) {
+                this.drawChunk(x, y)
+            }
+
+            // hide chunks outside of viewport
+            if (this.chunks[key].sprite) {
+                this.chunks[key].sprite.visible = visible
+            }
         })
     }
 }

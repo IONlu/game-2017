@@ -39,9 +39,6 @@ export default class Map extends Entity {
                 }
             }
         }
-
-        // physics
-        this.updatePhysicsBody(x, y)
     }
 
     loadChunksByPosition (x, y, distance = 1000) {
@@ -89,7 +86,6 @@ export default class Map extends Entity {
             return null
         }
         let tileData = this.chunks[chunkX + ';' + chunkY].chunk.set((CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE, (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE, tile)
-        this.updatePhysicsBody(chunkX, chunkY)
         return tileData
     }
 
