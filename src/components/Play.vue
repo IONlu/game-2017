@@ -110,26 +110,30 @@
 
                     // remote players
                     let remotePlayers = {}
-                    this.$socket.on('update', playerData => {
+                    this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
                             if (key === this.$socket.id) {
                                 return
                             }
-                            if (!playerData.hasOwnProperty(key)) {
+                            if (!data.player.hasOwnProperty(key)) {
                                 this.$game.destroyEntity(remotePlayers[key])
                                 delete remotePlayers[key]
                             }
                         })
-                        Object.keys(playerData).forEach(key => {
+                        Object.keys(data.player).forEach(key => {
                             if (key === this.$socket.id) {
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
                                 remotePlayers[key] = this.$game.createEntity('Player')
                             } else {
-                                remotePlayers[key].position.set(playerData[key][0], playerData[key][1])
-                                remotePlayers[key].rotation = playerData[key][2]
+                                remotePlayers[key].position.set(data.player[key][0], data.player[key][1])
+                                remotePlayers[key].rotation = data.player[key][2]
                             }
+                        })
+
+                        data.chunks.forEach(chunk => {
+                            this.$map._handleChunkData(chunk.x, chunk.y, chunk.data)
                         })
                     })
 
@@ -146,6 +150,11 @@
 
         methods: {
             onClick () {
+                this.$socket.emit('dig', [
+                    this.$tool.position.x / 8,
+                    this.$tool.position.y / 8,
+                    this.$tool.size
+                ])
                 this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
             }
         },

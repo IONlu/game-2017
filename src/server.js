@@ -56,6 +56,10 @@ io.on('connection', socket => {
     socket.on('update', data => {
         playerData[socket.id] = data
     })
+
+    socket.on('dig', data => {
+        map.dig(data[0], data[1], data[2])
+    })
 })
 
 // preload map data
@@ -63,7 +67,10 @@ map.loadChunksByPosition()
     .then(() => {
         // broadcast positions
         setInterval(() => {
-            io.sockets.emit('update', playerData)
+            io.sockets.emit('update', {
+                player: playerData,
+                chunks: map.getDirtyChunkData()
+            })
         }, 100)
 
         // start listening

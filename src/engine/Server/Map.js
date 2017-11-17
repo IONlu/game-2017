@@ -40,4 +40,21 @@ export default class Map extends CommonMap {
         }
         return Promise.all(chunksPromise)
     }
+
+    getDirtyChunkData () {
+        return Object.keys(this.chunks)
+            .filter(key => {
+                let isDirty = this.chunks[key].chunk.isDirty
+                this.chunks[key].chunk.isDirty = false
+                return isDirty
+            })
+            .map(key => {
+                return {
+                    version: 1,
+                    x: this.chunks[key].x,
+                    y: this.chunks[key].y,
+                    data: this.chunks[key].chunk.tiles
+                }
+            })
+    }
 }
