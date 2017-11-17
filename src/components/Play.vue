@@ -75,7 +75,7 @@
 
         mounted () {
             this.$socket = io.connect(
-                process.env.SOCKET_SERVER ||
+                process.env.SERVER_BASE_URL ||
                 ('//' + location.hostname + (location.port ? ':' + location.port : ''))
             )
 

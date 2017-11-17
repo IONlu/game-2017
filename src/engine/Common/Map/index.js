@@ -20,7 +20,8 @@ export default class Map extends Entity {
             y,
             chunk: new Chunk(CHUNK_SIZE)
         }
-        return axios.get('//localhost:4200/chunk/' + x + '/' + y)
+        return axios.get(process.env.SERVER_BASE_URL ||
+            ('//' + location.hostname + (location.port ? ':' + location.port : '')) + '/chunk/' + x + '/' + y)
             .then(response => {
                 this._handleChunkData(x, y, response.data.data)
             })
