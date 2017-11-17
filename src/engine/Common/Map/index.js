@@ -1,8 +1,7 @@
 import Entity from '../Entity'
-import Chunk from './Chunk'
-import { CHUNK_SIZE } from '@/config'
+import { CHUNK_SIZE } from '../../../config'
 import { Bodies, World, Body } from 'matter-js'
-import axios from 'axios'
+import Chunk from './Chunk'
 
 export default class Map extends Entity {
     constructor (app) {
@@ -11,61 +10,38 @@ export default class Map extends Entity {
         this.chunks = {}
     }
 
-    loadChunk (x, y) {
-        if (this.chunks.hasOwnProperty(x + ';' + y)) {
-            return this.chunks[x + ';' + y]
-        }
-        this.chunks[x + ';' + y] = {
-            x,
-            y,
-            chunk: new Chunk(CHUNK_SIZE)
-        }
-        return axios.get(process.env.SERVER_BASE_URL ||
-            ('//' + location.hostname + (location.port ? ':' + location.port : '')) + '/chunk/' + x + '/' + y)
-            .then(response => {
-                this._handleChunkData(x, y, response.data.data)
-            })
+    _handleChunkData (x, y, chunkData) {
+        let chunk = this.getChunk(x, y)
+        chunk.load(chunkData)
+        this.forceNeighbourChunkUpdate(x, y)
+        return chunk
     }
 
-    _handleChunkData (x, y, chunkData) {
-        if (!this.chunks.hasOwnProperty(x + ';' + y)) {
-            return
-        }
-        this.chunks[x + ';' + y].chunk.load(chunkData)
-
+    forceNeighbourChunkUpdate (x, y) {
         for (let i = x - 1; i < x + 2; i++) {
             for (let j = y - 1; j < y + 2; j++) {
-                if (this.chunks.hasOwnProperty(i + ';' + j)) {
-                    this.chunks[i + ';' + j].chunk.isDirty = true
+                if (i !== x || j !== y) {
+                    this.getChunk(i, j).isDirty = true
                 }
             }
         }
     }
 
-    loadChunksByPosition (x, y, distance = 1000) {
-        // bounding box
-        var chunkX = Math.floor((x - distance) / (8 * CHUNK_SIZE))
-        var chunkX2 = Math.ceil((x + distance) / (8 * CHUNK_SIZE)) + 1
-        var chunkY = Math.floor((y - distance) / (8 * CHUNK_SIZE))
-        var chunkY2 = Math.ceil((y + distance) / (8 * CHUNK_SIZE)) + 1
+    hasChunk (x, y) {
+        return this.chunks.hasOwnProperty(x + ';' + y)
+    }
 
-        // load chunks
-        let chunksPromise = []
-        for (let x = chunkX; x < chunkX2; x++) {
-            for (let y = chunkY; y < chunkY2; y++) {
-                chunksPromise.push(this.loadChunk(x, y))
-            }
-        }
-        return Promise.all(chunksPromise)
+    getChunk (x, y) {
+        return this.createChunkIfNone(x, y)
     }
 
     getTile (x, y) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
-        if (!this.chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
-            return null
-        }
-        return this.chunks[chunkX + ';' + chunkY].chunk.get((CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE, (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE)
+        return this.getChunk(chunkX, chunkY).get(
+            (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
+            (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE
+        )
     }
 
     getTileNeighbours (x, y) {
@@ -83,11 +59,11 @@ export default class Map extends Entity {
     setTile (x, y, tile = null) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
-        if (!this.chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
-            return null
-        }
-        let tileData = this.chunks[chunkX + ';' + chunkY].chunk.set((CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE, (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE, tile)
-        return tileData
+        return this.getChunk(chunkX, chunkY).set(
+            (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
+            (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE,
+            tile
+        )
     }
 
     dig (x, y, toolsize) {
@@ -151,5 +127,17 @@ export default class Map extends Entity {
             isStatic: true
         })
         World.add(this.app.physics.world, bodyGroup)
+    }
+
+    createChunkIfNone (x, y) {
+        if (this.chunks.hasOwnProperty(x + ';' + y)) {
+            return this.chunks[x + ';' + y].chunk
+        }
+        this.chunks[x + ';' + y] = {
+            x,
+            y,
+            chunk: new Chunk(CHUNK_SIZE)
+        }
+        return this.chunks[x + ';' + y].chunk
     }
 }

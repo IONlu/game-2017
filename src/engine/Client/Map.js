@@ -2,12 +2,15 @@ import CommonMap from '../Common/Map'
 import { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle } from 'pixi.js'
 import { CHUNK_SIZE } from '@/config'
 import BlockData from '@/assets/texture/block.json'
+import axios from 'axios'
 
 const TEXTURE_INDEX = Object.keys(BlockData.frames)
 
 export default class Map extends CommonMap {
     constructor (app) {
         super(app)
+
+        this._loadingChunks = {}
 
         this.initTileTextures()
 
@@ -268,5 +271,38 @@ export default class Map extends CommonMap {
                 this.chunks[key].sprite.visible = visible
             }
         })
+    }
+
+    loadChunk (x, y) {
+        this.createChunkIfNone(x, y)
+        if (!this._loadingChunks.hasOwnProperty(x + ';' + y)) {
+            this._loadingChunks[x + ';' + y] = axios.get((process.env.SERVER_BASE_URL ||
+                ('//' + location.hostname + (location.port ? ':' + location.port : ''))) + '/chunk/' + x + '/' + y)
+                .then(response => {
+                    delete this._loadingChunks[x + ';' + y]
+                    return this._handleChunkData(x, y, response.data.data)
+                })
+        }
+        return this._loadingChunks[x + ';' + y]
+    }
+
+    async loadChunksByPosition (x, y, distance = 1000) {
+        // bounding box
+        var chunkX = Math.floor((x - distance) / (8 * CHUNK_SIZE))
+        var chunkX2 = Math.ceil((x + distance) / (8 * CHUNK_SIZE)) + 1
+        var chunkY = Math.floor((y - distance) / (8 * CHUNK_SIZE))
+        var chunkY2 = Math.ceil((y + distance) / (8 * CHUNK_SIZE)) + 1
+
+        // load chunks
+        let chunksPromise = []
+        for (let x = chunkX; x < chunkX2; x++) {
+            for (let y = chunkY; y < chunkY2; y++) {
+                let chunk = this.getChunk(x, y)
+                if (chunk.isEmpty) {
+                    chunksPromise.push(this.loadChunk(x, y))
+                }
+            }
+        }
+        return Promise.all(chunksPromise)
     }
 }

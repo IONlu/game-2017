@@ -3,11 +3,23 @@ import socketio from 'socket.io'
 import http from 'http'
 import path from 'path'
 import cors from 'cors'
-import { generateData } from './engine/Common/Map/Chunk'
+import Factory from './engine/Common/Factory'
+import GameEngine from './engine/Common/GameEngine'
+import Loop from './engine/Server/Loop'
+import MapEntity from './engine/Server/Map'
 
+const PORT = 4200
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
+
+// temporary fix for matterjs not working on nodejs https://github.com/liabru/matter-js/issues/468
+global.HTMLElement = class DummyHTMLElement {}
+
+Factory.add('Map', MapEntity)
+
+const game = new GameEngine(new Loop(20))
+const map = game.createEntity('Map')
 
 app.use(cors())
 
@@ -18,11 +30,15 @@ app.get('/', (req, res, next) => {
 })
 
 app.get('/chunk/:x/:y', (req, res, next) => {
-    generateData(parseFloat(req.params.x), parseFloat(req.params.y))
-        .then(chunkData => {
+    res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate')
+    res.header('Expires', '-1')
+    res.header('Pragma', 'no-cache')
+
+    map.loadChunk(parseFloat(req.params.x), parseFloat(req.params.y))
+        .then(chunk => {
             res.json({
                 version: 1,
-                data: chunkData
+                data: chunk.tiles
             })
         })
 })
@@ -42,9 +58,15 @@ io.on('connection', socket => {
     })
 })
 
-// broadcast positions
-setInterval(() => {
-    io.sockets.emit('update', playerData)
-}, 100)
+// preload map data
+map.loadChunksByPosition()
+    .then(() => {
+        // broadcast positions
+        setInterval(() => {
+            io.sockets.emit('update', playerData)
+        }, 100)
 
-server.listen(4200)
+        // start listening
+        server.listen(PORT)
+        console.log('Server is now listening on port ' + PORT)
+    })

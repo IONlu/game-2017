@@ -1,4 +1,4 @@
-import { Point } from 'pixi.js'
+import Vector from './Vector'
 
 export class Trait {
     update (entity, updateData) {
@@ -14,7 +14,7 @@ export class Trait {
 export default class Entity {
     constructor (app) {
         this.app = app
-        this.position = new Point(0, 0)
+        this.position = new Vector(0, 0)
         this.rotation = 0
         this.traits = []
     }
@@ -26,7 +26,7 @@ export default class Entity {
 
     update (updateData) {
         this.old = {
-            position: new Point(this.position.x, this.position.y),
+            position: this.position.clone(),
             rotation: this.rotation
         }
 
