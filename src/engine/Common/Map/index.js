@@ -59,6 +59,7 @@ export default class Map extends Entity {
     setTile (x, y, tile = null) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
+        this.forceNeighbourChunkUpdate(chunkX, chunkY)
         return this.getChunk(chunkX, chunkY).set(
             (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
             (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE,
