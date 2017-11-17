@@ -2,8 +2,18 @@
     <div class="component-play">
         <div
             class="loading"
-            v-show="isLoading">
+            v-if="isLoading">
             <div>loading ...</div>
+        </div>
+        <div
+            class="dialog-container"
+            v-if="!isLoading && !isPlaying">
+            <div class="name-dialog">
+                <label>
+                    Enter your name
+                </label>
+                <input type="text" @keyup.enter="onNameEnter" />
+            </div>
         </div>
         <div
             class="renderer"
@@ -22,6 +32,7 @@
         justify-content: center;
         background-color: #000;
         color: #FFF;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
     .component-play .renderer {
@@ -40,6 +51,27 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .component-play .dialog-container {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .component-play .dialog-container .name-dialog {
+        border: 1px solid #FFF;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 1em;
+        text-align: center;
+    }
+
+    .component-play .dialog-container .name-dialog label {
+        display: block;
+        text-transform: uppercase;
     }
 </style>
 
@@ -69,7 +101,8 @@
 
         data () {
             return {
-                isLoading: true
+                isLoading: true,
+                isPlaying: false
             }
         },
 
@@ -94,19 +127,10 @@
                 .then(() => {
                     this.$map = this.$game.createEntity('Map')
 
-                    this.$player = this.$game.createEntity('Player')
-                    this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
-                    this.$player.addTrait(new NetworkSendTrait(this.$socket))
-                    this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
-                    this.$player.addTrait(new ChunkLoaderTrait(this.$map))
-
                     for (let i = 0; i < 10; i++) {
                         let ball = this.$game.createEntity('Ball')
                         ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
                     }
-
-                    this.$tool = new ToolTrait(this.$game)
-                    this.$player.addTrait(this.$tool)
 
                     // remote players
                     let remotePlayers = {}
@@ -138,7 +162,7 @@
                     })
 
                     // preload chunks
-                    return this.$map.loadChunksByPosition(this.$player.position.x, this.$player.position.y)
+                    return this.$map.loadChunksByPosition(0, 0)
                 })
                 .then(() => {
                     this.isLoading = false
@@ -156,6 +180,18 @@
                     this.$tool.size
                 ])
                 this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
+            },
+
+            onNameEnter () {
+                this.$player = this.$game.createEntity('Player')
+                this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
+                this.$player.addTrait(new NetworkSendTrait(this.$socket))
+                this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
+                this.$player.addTrait(new ChunkLoaderTrait(this.$map))
+                this.$tool = new ToolTrait(this.$game)
+                this.$player.addTrait(this.$tool)
+
+                this.isPlaying = true
             }
         },
 
