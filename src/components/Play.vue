@@ -132,6 +132,19 @@
                         ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
                     }
 
+                    // start playing
+                    this.$socket.on('start', data => {
+                        this.$player = this.$game.createEntity('Player')
+                        this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
+                        this.$player.addTrait(new NetworkSendTrait(this.$socket))
+                        this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
+                        this.$player.addTrait(new ChunkLoaderTrait(this.$map))
+                        this.$tool = new ToolTrait(this.$game)
+                        this.$player.addTrait(this.$tool)
+
+                        this.isPlaying = true
+                    })
+
                     // remote players
                     let remotePlayers = {}
                     this.$socket.on('update', data => {
@@ -182,16 +195,11 @@
                 this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
             },
 
-            onNameEnter () {
-                this.$player = this.$game.createEntity('Player')
-                this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
-                this.$player.addTrait(new NetworkSendTrait(this.$socket))
-                this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
-                this.$player.addTrait(new ChunkLoaderTrait(this.$map))
-                this.$tool = new ToolTrait(this.$game)
-                this.$player.addTrait(this.$tool)
-
-                this.isPlaying = true
+            onNameEnter (evt) {
+                let name = evt.target.value
+                if (name) {
+                    this.$socket.emit('start', name)
+                }
             }
         },
 

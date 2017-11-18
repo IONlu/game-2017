@@ -13,6 +13,8 @@ const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
 
+let NEXT_ENTITY_ID = 1
+
 // temporary fix for matterjs not working on nodejs https://github.com/liabru/matter-js/issues/468
 global.HTMLElement = class DummyHTMLElement {}
 
@@ -55,6 +57,15 @@ io.on('connection', socket => {
 
     socket.on('update', data => {
         playerData[socket.id] = data
+    })
+
+    socket.on('start', name => {
+        socket.ENTITY_ID = NEXT_ENTITY_ID
+        socket.emit('start', {
+            id: NEXT_ENTITY_ID
+        })
+        console.log(name + ' starts playing. ID: ' + NEXT_ENTITY_ID)
+        NEXT_ENTITY_ID++
     })
 
     socket.on('dig', data => {
