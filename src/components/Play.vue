@@ -86,6 +86,7 @@
     import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
     import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
     import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
+    import AttachTextTrait from '../engine/Client/Trait/AttachText'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -151,7 +152,7 @@
                     this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
                             let ENTITY_ID = parseInt(key, 10)
-                            if (ENTITY_ID === this.$player.ENTITY_ID) {
+                            if (this.$player && ENTITY_ID === this.$player.ENTITY_ID) {
                                 return
                             }
                             if (!data.player.hasOwnProperty(key)) {
@@ -161,11 +162,12 @@
                         })
                         Object.keys(data.player).forEach(key => {
                             let ENTITY_ID = parseInt(key, 10)
-                            if (ENTITY_ID === this.$player.ENTITY_ID) {
+                            if (this.$player && ENTITY_ID === this.$player.ENTITY_ID) {
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
                                 remotePlayers[key] = this.$game.createEntity('Player')
+                                remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
                             } else {
                                 remotePlayers[key].position.set(data.player[key].data[0], data.player[key].data[1])
                                 remotePlayers[key].rotation = data.player[key].data[2]

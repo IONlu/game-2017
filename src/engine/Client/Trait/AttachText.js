@@ -1,0 +1,27 @@
+import { Trait } from '../../Common/Entity'
+import { Text } from 'pixi.js'
+
+export default class AttachText extends Trait {
+    constructor (app, text) {
+        super()
+        this.app = app
+        this.text = text
+
+        this.sprite = new Text(text, {
+            fontFamily: 'Arial',
+            fontSize: 10,
+            fill: 0xFFFFFF,
+            align: 'center'
+        })
+        this.app.stage.addChild(this.sprite)
+    }
+
+    render (entity, t) {
+        super.render(entity, t)
+
+        this.sprite.position.set(
+            entity.sprite.x - (this.sprite.width / 2),
+            entity.sprite.y - (entity.sprite.height / 2) - this.sprite.height - 2
+        )
+    }
+}
