@@ -50,21 +50,28 @@ let playerData = {}
 // handle socket io connections
 io.on('connection', socket => {
     socket.on('disconnect', () => {
-        if (playerData.hasOwnProperty(socket.id)) {
-            delete playerData[socket.id]
+        if (playerData.hasOwnProperty(socket.ENTITY_ID)) {
+            console.log(playerData[socket.ENTITY_ID].name + ' has left the game. ID: ' + socket.ENTITY_ID)
+            delete playerData[socket.ENTITY_ID]
         }
     })
 
     socket.on('update', data => {
-        playerData[socket.id] = data
+        if (!playerData.hasOwnProperty(socket.ENTITY_ID)) {
+            return
+        }
+        playerData[socket.ENTITY_ID].data = data
     })
 
     socket.on('start', name => {
         socket.ENTITY_ID = NEXT_ENTITY_ID
+        playerData[socket.ENTITY_ID] = {
+            name, data: undefined
+        }
         socket.emit('start', {
             id: NEXT_ENTITY_ID
         })
-        console.log(name + ' starts playing. ID: ' + NEXT_ENTITY_ID)
+        console.log(name + ' has joined the game. ID: ' + NEXT_ENTITY_ID)
         NEXT_ENTITY_ID++
     })
 

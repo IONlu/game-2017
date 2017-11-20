@@ -133,7 +133,7 @@
                     }
 
                     // start playing
-                    this.$socket.on('start', data => {
+                    this.$socket.on('start', ({ id }) => {
                         this.$player = this.$game.createEntity('Player')
                         this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics))
                         this.$player.addTrait(new NetworkSendTrait(this.$socket))
@@ -141,6 +141,7 @@
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
                         this.$tool = new ToolTrait(this.$game)
                         this.$player.addTrait(this.$tool)
+                        this.$player.ENTITY_ID = id
 
                         this.isPlaying = true
                     })
@@ -149,7 +150,8 @@
                     let remotePlayers = {}
                     this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
-                            if (key === this.$socket.id) {
+                            let ENTITY_ID = parseInt(key, 10)
+                            if (ENTITY_ID === this.$player.ENTITY_ID) {
                                 return
                             }
                             if (!data.player.hasOwnProperty(key)) {
@@ -158,14 +160,15 @@
                             }
                         })
                         Object.keys(data.player).forEach(key => {
-                            if (key === this.$socket.id) {
+                            let ENTITY_ID = parseInt(key, 10)
+                            if (ENTITY_ID === this.$player.ENTITY_ID) {
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
                                 remotePlayers[key] = this.$game.createEntity('Player')
                             } else {
-                                remotePlayers[key].position.set(data.player[key][0], data.player[key][1])
-                                remotePlayers[key].rotation = data.player[key][2]
+                                remotePlayers[key].position.set(data.player[key].data[0], data.player[key].data[1])
+                                remotePlayers[key].rotation = data.player[key].data[2]
                             }
                         })
 
