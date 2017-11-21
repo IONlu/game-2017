@@ -12,7 +12,13 @@
                 <label>
                     Enter your name
                 </label>
-                <input type="text" @keyup.enter="onNameEnter" />
+                <input
+                    class="name-input"
+                    type="text"
+                    @keyup.enter="onNameEnter"
+                    maxlength="10"
+                    v-focus
+                />
             </div>
         </div>
         <div
@@ -72,6 +78,17 @@
         display: block;
         text-transform: uppercase;
     }
+
+    .component-play .dialog-container .name-input {
+        border: 0;
+        background-color: #FFFFFF;
+        display: block;
+        padding: 0.1em;
+        text-align: center;
+        margin-top: 0.5em;
+        font-family: inherit;
+        font-size: 2em;
+    }
 </style>
 
 <script>
@@ -103,6 +120,14 @@
             return {
                 isLoading: true,
                 isPlaying: false
+            }
+        },
+
+        directives: {
+            focus: {
+                inserted: function (el) {
+                    el.focus()
+                }
             }
         },
 
