@@ -16,19 +16,23 @@ export default class Keyboard {
         return this.mirror.indexOf(key) > -1
     }
 
-    _handleKeyDown (event) {
-        var code = event.keyCode
-        var index = this.current.indexOf(code)
-        if (index === -1) {
-            this.current.push(code)
+    _handleKeyDown (evt) {
+        if (evt.isTrusted) {
+            var code = evt.keyCode
+            var index = this.current.indexOf(code)
+            if (index === -1) {
+                this.current.push(code)
+            }
         }
     }
 
-    _handleKeyUp (event) {
-        var code = event.keyCode
-        var index = this.current.indexOf(code)
-        if (index > -1) {
-            this.current.splice(index, 1)
+    _handleKeyUp (evt) {
+        if (evt.isTrusted) {
+            var code = evt.keyCode
+            var index = this.current.indexOf(code)
+            if (index > -1) {
+                this.current.splice(index, 1)
+            }
         }
     }
 }

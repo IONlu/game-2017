@@ -190,13 +190,15 @@
         },
 
         methods: {
-            onClick () {
-                this.$socket.emit('dig', [
-                    this.$tool.position.x / 8,
-                    this.$tool.position.y / 8,
-                    this.$tool.size
-                ])
-                this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
+            onClick (evt) {
+                if (evt.isTrusted) {
+                    this.$socket.emit('dig', [
+                        this.$tool.position.x / 8,
+                        this.$tool.position.y / 8,
+                        this.$tool.size
+                    ])
+                    this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
+                }
             },
 
             onNameEnter (evt) {
