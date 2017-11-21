@@ -1,4 +1,13 @@
 import { Engine, Events } from 'matter-js'
+import decomp from 'poly-decomp'
+
+// needed for matterjs
+if (typeof window !== 'undefined') {
+    window.decomp = decomp
+}
+if (typeof global !== 'undefined') {
+    global.decomp = decomp
+}
 
 var stateProps = [
     'angle', 'anglePrev',
