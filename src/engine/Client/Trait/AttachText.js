@@ -8,11 +8,12 @@ export default class AttachText extends Trait {
         this.text = text
 
         this.sprite = new Text(text, {
-            fontFamily: 'Arial',
-            fontSize: 10,
+            fontFamily: 'Hardpixel',
+            fontSize: 20,
             fill: 0xFFFFFF,
             align: 'center'
         })
+        this.sprite.scale.set(0.5)
         this.app.stage.addChild(this.sprite)
     }
 

@@ -32,7 +32,6 @@
         justify-content: center;
         background-color: #000;
         color: #FFF;
-        font-family: Arial, Helvetica, sans-serif;
     }
 
     .component-play .renderer {
