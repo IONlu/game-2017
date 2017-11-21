@@ -25,4 +25,9 @@ export default class AttachText extends Trait {
             entity.sprite.y - (entity.sprite.height / 2) - this.sprite.height - 2
         )
     }
+
+    destroy () {
+        super.destroy()
+        this.app.stage.removeChild(this.sprite)
+    }
 }
