@@ -47,8 +47,8 @@ export default class GameEngine {
         }
 
         this.entities.forEach(entity => {
-            if (entity.update) {
-                entity.update(updateData)
+            if (entity.handleUpdate) {
+                entity.handleUpdate(updateData)
             }
         })
         this.physics.update(updateData)

@@ -229,7 +229,7 @@
             onNameEnter (evt) {
                 let name = evt.target.value
                 if (name) {
-                    this.$socket.emit('start', name)
+                    this.$socket.emit('start', name.slice(0, 10))
                 }
             }
         },

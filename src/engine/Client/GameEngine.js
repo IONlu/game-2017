@@ -61,8 +61,8 @@ export default class GameEngine extends GameEngineCommon {
         this.camera.placeContainer(this.stage)
 
         this.entities.forEach(entity => {
-            if (entity.render) {
-                entity.render(delta)
+            if (entity.handleRender) {
+                entity.handleRender(delta)
             }
         })
 

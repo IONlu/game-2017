@@ -29,7 +29,10 @@ export default class Entity {
             position: this.position.clone(),
             rotation: this.rotation
         }
+    }
 
+    handleUpdate (updateData) {
+        this.update(updateData)
         this.traits.forEach(trait => {
             trait.update(this, updateData)
         })

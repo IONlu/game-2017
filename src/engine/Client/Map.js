@@ -273,6 +273,10 @@ export default class Map extends CommonMap {
         })
     }
 
+    handleRender (t) {
+        this.render(t)
+    }
+
     loadChunk (x, y) {
         this.createChunkIfNone(x, y)
         if (!this._loadingChunks.hasOwnProperty(x + ';' + y)) {

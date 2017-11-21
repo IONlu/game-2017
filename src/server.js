@@ -64,6 +64,7 @@ io.on('connection', socket => {
     })
 
     socket.on('start', name => {
+        name = name.slice(0, 10)
         socket.ENTITY_ID = NEXT_ENTITY_ID
         playerData[socket.ENTITY_ID] = {
             name, data: undefined
