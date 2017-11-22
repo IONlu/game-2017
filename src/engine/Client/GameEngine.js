@@ -27,6 +27,7 @@ export default class GameEngine extends GameEngineCommon {
         this.containerNode.appendChild(this.renderer.view)
 
         this.stage = this.createLayer()
+        this.ui = this.createLayer()
         this.camera = new Camera(this)
 
         // TODO: bind to game node

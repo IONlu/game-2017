@@ -103,6 +103,7 @@
     import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
     import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
     import AttachTextTrait from '../engine/Client/Trait/AttachText'
+    import PositionDialogTrait from '../engine/Client/Trait/PositionDialog'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -164,6 +165,7 @@
                         this.$player.addTrait(new NetworkSendTrait(this.$socket))
                         this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
+                        this.$player.addTrait(new PositionDialogTrait(this.$game))
                         this.$tool = new ToolTrait(this.$game)
                         this.$player.addTrait(this.$tool)
                         this.$player.ENTITY_ID = id
