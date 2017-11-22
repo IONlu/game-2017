@@ -18,7 +18,7 @@ export default class PositionDialog extends Trait {
 
     render (entity, t) {
         super.render(entity, t)
-        let text = 'X: ' + Math.round(entity.sprite.position.x) + '\nY: ' + -Math.round(entity.sprite.position.y)
+        let text = 'X: ' + Math.round(entity.sprite.position.x / 16) + 'm\nY: ' + -Math.round(entity.sprite.position.y / 16) + 'm'
 
         if (this.sprite.text !== text) {
             this.sprite.text = text
