@@ -1,16 +1,16 @@
 import { Trait } from '../Common/Entity'
 import { Graphics, Point } from 'pixi.js'
 
+let spriteStack = []
+
 export default class Tool extends Trait {
     constructor (app) {
         super()
         this.app = app
         this.size = 3
         this.position = new Point()
-        this.sprite = new Graphics()
-        this.updateToolSprite()
 
-        this.app.stage.addChild(this.sprite)
+        this.sprites = []
 
         window.document.body.addEventListener('wheel', this._handleMouseWheel.bind(this))
     }
@@ -23,13 +23,6 @@ export default class Tool extends Trait {
             this.size--
         }
         this.size = Math.max(1, Math.min(4, this.size))
-        this.updateToolSprite()
-    }
-
-    updateToolSprite () {
-        this.sprite.clear()
-        this.sprite.lineStyle(0.5, 0x000000)
-        this.sprite.drawCircle(0, 0, this.size * 4)
     }
 
     render (entity, t) {
@@ -52,6 +45,60 @@ export default class Tool extends Trait {
         }
         this.position = new Point(toolX, toolY)
 
-        this.sprite.position.set(toolX, toolY)
+        this.renderRectangles()
+    }
+
+    renderRectangles () {
+        spriteStack = [
+            ...spriteStack,
+            ...this.sprites
+        ]
+        this.sprites = []
+
+        let x = (this.position.x / 8) - 0.5
+        let y = (this.position.y / 8) - 0.5
+
+        let radius = (this.size / 2)
+        let radiusSquared = radius * radius
+        for (let i = Math.floor(x - radius); i <= Math.ceil(x + radius); i++) {
+            for (let j = Math.floor(y - radius); j <= Math.ceil(y + radius); j++) {
+                let dx = i - x
+                let dy = j - y
+                let distanceSquared = dx * dx + dy * dy
+                if (distanceSquared <= radiusSquared) {
+                    let sprite = spriteStack.pop() || this.createSprite()
+                    sprite.position.set(
+                        i * 8,
+                        j * 8
+                    )
+                    sprite.visible = true
+                    this.sprites.push(sprite)
+                }
+            }
+        }
+
+        spriteStack.forEach(sprite => {
+            sprite.visible = false
+        })
+    }
+
+    createSprite () {
+        let sprite = new Graphics()
+        sprite.beginFill(0xFFFFFF, 0.5)
+        sprite.drawRect(0, 0, 8, 8)
+        this.app.stage.addChild(sprite)
+        return sprite
+    }
+
+    destroy () {
+        super.destroy()
+        spriteStack = [
+            ...spriteStack,
+            ...this.sprites
+        ]
+        this.sprites = []
+        spriteStack.forEach(sprite => {
+            sprite.visible = false
+        })
     }
 }

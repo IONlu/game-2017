@@ -67,14 +67,17 @@ export default class Map extends Entity {
         )
     }
 
-    dig (x, y, toolsize) {
-        let radius = toolsize / 2
-        for (let i = Math.floor(x - radius); i < Math.ceil(x + radius); i++) {
-            for (let j = Math.floor(y - radius); j < Math.ceil(y + radius); j++) {
+    dig (x, y, toolSize) {
+        x = x - 0.5
+        y = y - 0.5
+        let radius = (toolSize / 2)
+        let radiusSquared = radius * radius
+        for (let i = Math.floor(x - radius); i <= Math.ceil(x + radius); i++) {
+            for (let j = Math.floor(y - radius); j <= Math.ceil(y + radius); j++) {
                 let dx = i - x
                 let dy = j - y
-                let distance = Math.floor(Math.sqrt(dx * dx + dy * dy))
-                if (distance < radius) {
+                let distanceSquared = dx * dx + dy * dy
+                if (distanceSquared <= radiusSquared) {
                     this.setTile(i, j)
                 }
             }
