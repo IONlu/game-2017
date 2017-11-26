@@ -1,28 +1,43 @@
 import { Trait } from '../Common/Entity'
-import { Graphics, Point } from 'pixi.js'
+import { Graphics } from 'pixi.js'
+import Vector from '../Common/Vector'
 
 let spriteStack = []
 
 export default class Tool extends Trait {
-    constructor (app) {
+    constructor (app, map, socket) {
         super()
         this.app = app
-        this.size = 3
-        this.position = new Point()
+        this.map = map
+        this.socket = socket
+
+        this.size = 2
+        this.position = new Vector()
+        this.touchingTiles = []
 
         this.sprites = []
 
         window.document.body.addEventListener('wheel', this._handleMouseWheel.bind(this))
+        window.document.body.addEventListener('click', this._handleMouseClick.bind(this))
     }
 
     _handleMouseWheel (evt) {
         if (evt.deltaY > 0) {
-            this.size++
+            this.size += 2
         }
         if (evt.deltaY < 0) {
-            this.size--
+            this.size -= 2
         }
-        this.size = Math.max(1, Math.min(4, this.size))
+        this.size = Math.max(2, Math.min(6, this.size))
+    }
+
+    _handleMouseClick (evt) {
+        if (evt.isTrusted) {
+            this.socket.emit('setTiles', {
+                tiles: this.touchingTiles
+            })
+            this.map.setTiles(this.touchingTiles)
+        }
     }
 
     render (entity, t) {
@@ -33,49 +48,64 @@ export default class Tool extends Trait {
             this.app.mousePosition.y
         )
 
-        let dx = targetPosition.x - entity.sprite.position.x
-        let dy = targetPosition.y - entity.sprite.position.y
-        let distance = Math.sqrt(dx * dx + dy * dy)
+        this.position.set(
+            targetPosition.x,
+            targetPosition.y
+        )
 
-        let toolX = targetPosition.x
-        let toolY = targetPosition.y
-        if (distance + ((this.size / 2) * 8) > (8 * 8)) {
-            toolX = ((dx / distance) * ((8 - (this.size / 2)) * 8)) + entity.sprite.position.x
-            toolY = ((dy / distance) * ((8 - (this.size / 2)) * 8)) + entity.sprite.position.y
-        }
-        this.position = new Point(toolX, toolY)
-
+        this.initTouchingTiles(entity)
         this.renderRectangles()
     }
 
-    renderRectangles () {
+    initTouchingTiles (entity) {
+        this.touchingTiles = []
+        let x = Math.round(this.position.x / 8) - 0.5
+        let y = Math.round(this.position.y / 8) - 0.5
+
+        let radius = (this.size / 2)
+        let radiusSquared = radius * radius
+        for (let i = Math.floor(x - radius); i <= Math.ceil(x + radius); i++) {
+            for (let j = Math.floor(y - radius); j <= Math.ceil(y + radius); j++) {
+                // mouse distance
+                let dx = i - x
+                let dy = j - y
+                let mouseDistanceSquared = dx * dx + dy * dy
+
+                // player distance
+                let mx = (entity.sprite.position.x / 8) - i
+                let my = (entity.sprite.position.y / 8) - j
+                let playerDistanceSquared = mx * mx + my * my
+
+                if (
+                    mouseDistanceSquared <= radiusSquared &&
+                    playerDistanceSquared <= 8 * 8 &&
+                    this.map.getTile(i, j) !== null
+                ) {
+                    this.touchingTiles.push({
+                        x: i,
+                        y: j
+                    })
+                }
+            }
+        }
+    }
+
+    renderRectangles (entity) {
         spriteStack = [
             ...spriteStack,
             ...this.sprites
         ]
         this.sprites = []
 
-        let x = (this.position.x / 8) - 0.5
-        let y = (this.position.y / 8) - 0.5
-
-        let radius = (this.size / 2)
-        let radiusSquared = radius * radius
-        for (let i = Math.floor(x - radius); i <= Math.ceil(x + radius); i++) {
-            for (let j = Math.floor(y - radius); j <= Math.ceil(y + radius); j++) {
-                let dx = i - x
-                let dy = j - y
-                let distanceSquared = dx * dx + dy * dy
-                if (distanceSquared <= radiusSquared) {
-                    let sprite = spriteStack.pop() || this.createSprite()
-                    sprite.position.set(
-                        i * 8,
-                        j * 8
-                    )
-                    sprite.visible = true
-                    this.sprites.push(sprite)
-                }
-            }
-        }
+        this.touchingTiles.forEach(({ x, y }) => {
+            let sprite = spriteStack.pop() || this.createSprite()
+            sprite.position.set(
+                x * 8,
+                y * 8
+            )
+            sprite.visible = true
+            this.sprites.push(sprite)
+        })
 
         spriteStack.forEach(sprite => {
             sprite.visible = false

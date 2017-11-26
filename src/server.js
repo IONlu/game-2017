@@ -76,8 +76,11 @@ io.on('connection', socket => {
         NEXT_ENTITY_ID++
     })
 
-    socket.on('dig', data => {
-        map.dig(data[0], data[1], data[2])
+    socket.on('setTiles', data => {
+        map.setTiles(data.tiles, data.hasOwnProperty('type')
+            ? data.type
+            : null
+        )
     })
 })
 

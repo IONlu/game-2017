@@ -56,32 +56,21 @@ export default class Map extends Entity {
         return neighbours
     }
 
-    setTile (x, y, tile = null) {
+    setTile (x, y, type = null) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
         this.forceNeighbourChunkUpdate(chunkX, chunkY)
         return this.getChunk(chunkX, chunkY).set(
             (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
             (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE,
-            tile
+            type
         )
     }
 
-    dig (x, y, toolSize) {
-        x = x - 0.5
-        y = y - 0.5
-        let radius = (toolSize / 2)
-        let radiusSquared = radius * radius
-        for (let i = Math.floor(x - radius); i <= Math.ceil(x + radius); i++) {
-            for (let j = Math.floor(y - radius); j <= Math.ceil(y + radius); j++) {
-                let dx = i - x
-                let dy = j - y
-                let distanceSquared = dx * dx + dy * dy
-                if (distanceSquared <= radiusSquared) {
-                    this.setTile(i, j)
-                }
-            }
-        }
+    setTiles (tiles, type = null) {
+        tiles.forEach(({ x, y }) => {
+            this.setTile(x, y, type)
+        })
     }
 
     updatePhysicsBody (x, y) {

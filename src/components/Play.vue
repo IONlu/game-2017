@@ -24,7 +24,6 @@
         <div
             class="renderer"
             ref="renderer"
-            @click="onClick"
         ></div>
     </div>
 </template>
@@ -166,7 +165,7 @@
                         this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
                         this.$player.addTrait(new PositionDialogTrait(this.$game))
-                        this.$tool = new ToolTrait(this.$game)
+                        this.$tool = new ToolTrait(this.$game, this.$map, this.$socket)
                         this.$player.addTrait(this.$tool)
                         this.$player.ENTITY_ID = id
 
@@ -217,17 +216,6 @@
         },
 
         methods: {
-            onClick (evt) {
-                if (evt.isTrusted) {
-                    this.$socket.emit('dig', [
-                        this.$tool.position.x / 8,
-                        this.$tool.position.y / 8,
-                        this.$tool.size
-                    ])
-                    this.$map.dig(this.$tool.position.x / 8, this.$tool.position.y / 8, this.$tool.size)
-                }
-            },
-
             onNameEnter (evt) {
                 let name = evt.target.value
                 if (name) {
