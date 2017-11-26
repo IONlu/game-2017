@@ -13,6 +13,7 @@ export default class Map extends Entity {
     _handleChunkData (x, y, chunkData) {
         let chunk = this.getChunk(x, y)
         chunk.load(chunkData)
+        chunk.isDummy = false
         this.forceNeighbourChunkUpdate(x, y)
         return chunk
     }
@@ -126,10 +127,11 @@ export default class Map extends Entity {
         if (this.chunks.hasOwnProperty(x + ';' + y)) {
             return this.chunks[x + ';' + y].chunk
         }
+        let chunk = new Chunk(CHUNK_SIZE, true)
         this.chunks[x + ';' + y] = {
             x,
             y,
-            chunk: new Chunk(CHUNK_SIZE)
+            chunk
         }
         return this.chunks[x + ';' + y].chunk
     }

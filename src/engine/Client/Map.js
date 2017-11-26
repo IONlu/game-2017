@@ -302,7 +302,7 @@ export default class Map extends CommonMap {
         for (let x = chunkX; x < chunkX2; x++) {
             for (let y = chunkY; y < chunkY2; y++) {
                 let chunk = this.getChunk(x, y)
-                if (chunk.isEmpty) {
+                if (chunk.isDummy) {
                     chunksPromise.push(this.loadChunk(x, y))
                 }
             }

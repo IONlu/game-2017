@@ -11,7 +11,7 @@ export default class Map extends CommonMap {
 
     async loadChunk (x, y) {
         let chunk = this.createChunkIfNone(x, y)
-        if (!chunk.isEmpty) {
+        if (!chunk.isDummy) {
             return chunk
         }
         if (!this._loadingChunks.hasOwnProperty(x + ';' + y)) {

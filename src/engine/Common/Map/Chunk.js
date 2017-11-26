@@ -4,9 +4,10 @@ import { CHUNK_SIZE } from '../../../config'
 import BlockData from '../../../assets/texture/block.json'
 
 export default class Chunk {
-    constructor (size) {
+    constructor (size, isDummy = false) {
         this.size = size
         this.length = size * size
+        this.isDummy = isDummy
         this.clear()
     }
 
@@ -20,7 +21,6 @@ export default class Chunk {
     clear () {
         this.tiles = new Array(this.length)
         this.isDirty = true
-        this.isEmpty = true
     }
 
     load (tiles) {
@@ -30,13 +30,11 @@ export default class Chunk {
             new Array(this.length - tiles.length)
         ]
         this.isDirty = true
-        this.isEmpty = false
     }
 
     set (x, y, tileData) {
         this.tiles[this._getIndexFromPosition(x, y)] = tileData
         this.isDirty = true
-        this.isEmpty = false
         return tileData
     }
 
