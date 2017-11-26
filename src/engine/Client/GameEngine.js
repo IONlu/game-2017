@@ -39,7 +39,8 @@ export default class GameEngine extends GameEngineCommon {
         this.stage.addChild(this.viewBoxGraphics)
 
         this.mousePosition = new PIXI.Point()
-        window.document.body.addEventListener('mousemove', this._handleMouseMove.bind(this))
+        window.document.addEventListener('mousemove', this._handleMouseMove)
+        window.document.addEventListener('blur', this._handleBlur)
     }
 
     createLayer (index) {
@@ -95,10 +96,30 @@ export default class GameEngine extends GameEngineCommon {
         )
     }
 
-    _handleMouseMove ({ clientX, clientY, target }) {
+    _handleMouseMove = function ({ clientX, clientY, target }) {
         this.mousePosition = new PIXI.Point(
             clientX - this.containerNode.offsetLeft,
             clientY - this.containerNode.offsetTop
         )
+    }.bind(this)
+
+    _handleBlur = function () {
+        if (this.isRunning && this.loop.isRunning) {
+            this.loop.stop()
+            let restartLoop = function () {
+                if (this.isRunning && !this.loop.isRunning) {
+                    this.loop.start()
+                }
+                window.document.removeEventListener('blur', restartLoop)
+            }.bind(this)
+            window.document.addEventListener('focus', restartLoop)
+        }
+    }.bind(this)
+
+    destroy () {
+        window.document.removeEventListener('mousemove', this._handleMouseMove)
+        window.document.removeEventListener('blur', this._handleBlur)
+
+        super.destroy()
     }
 }

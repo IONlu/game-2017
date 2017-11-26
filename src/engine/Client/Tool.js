@@ -17,11 +17,11 @@ export default class Tool extends Trait {
 
         this.sprites = []
 
-        window.document.body.addEventListener('wheel', this._handleMouseWheel.bind(this))
-        window.document.body.addEventListener('click', this._handleMouseClick.bind(this))
+        window.document.addEventListener('wheel', this._handleMouseWheel)
+        window.document.addEventListener('click', this._handleMouseClick)
     }
 
-    _handleMouseWheel (evt) {
+    _handleMouseWheel = function (evt) {
         if (evt.deltaY > 0) {
             this.size += 2
         }
@@ -29,16 +29,16 @@ export default class Tool extends Trait {
             this.size -= 2
         }
         this.size = Math.max(2, Math.min(6, this.size))
-    }
+    }.bind(this)
 
-    _handleMouseClick (evt) {
+    _handleMouseClick = function (evt) {
         if (evt.isTrusted) {
             this.socket.emit('setTiles', {
                 tiles: this.touchingTiles
             })
             this.map.setTiles(this.touchingTiles)
         }
-    }
+    }.bind(this)
 
     render (entity, t) {
         super.render(entity, t)
@@ -122,6 +122,10 @@ export default class Tool extends Trait {
 
     destroy () {
         super.destroy()
+
+        window.document.removeEventListener('wheel', this._handleMouseWheel)
+        window.document.removeEventListener('click', this._handleMouseClick)
+
         spriteStack = [
             ...spriteStack,
             ...this.sprites

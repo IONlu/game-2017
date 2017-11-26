@@ -13,6 +13,8 @@ export default class GameEngine {
         this.maxStateCount = 100
         this.updateStep = 0
 
+        this.isRunning = false
+
         this.loop.on('update', this.update.bind(this))
     }
 
@@ -55,6 +57,16 @@ export default class GameEngine {
     }
 
     start () {
+        this.isRunning = true
         this.loop.start()
+    }
+
+    stop () {
+        this.loop.stop()
+        this.isRunning = false
+    }
+
+    destroy () {
+        this.stop()
     }
 }
