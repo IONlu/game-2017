@@ -58,8 +58,8 @@ for (let name in BlockData.frames) {
 export const generateData = (x, y) => {
     let height = []
     for (let i = 0; i < CHUNK_SIZE; i++) {
-        let valueA = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 512, 0) * 20
-        let valueB = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 64, 0) * 10
+        let valueA = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 1024, 0) * 100
+        let valueB = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 43, 0) * 10
         height.push(valueA + valueB)
     }
     return new Promise(resolve => {
@@ -68,8 +68,8 @@ export const generateData = (x, y) => {
             for (let i = 0; i < CHUNK_SIZE; i++) {
                 let tile
                 if ((y * CHUNK_SIZE) + j > height[i]) {
-                    let noiseX = ((x * CHUNK_SIZE) + i) / 128
-                    let noiseY = ((y * CHUNK_SIZE) + j) / 128
+                    let noiseX = ((x * CHUNK_SIZE) + i) / 512
+                    let noiseY = ((y * CHUNK_SIZE) + j) / 512
                     let noise = []
                     for (let name in BlockData.frames) {
                         noise.push(BlockNoise[name].noise2D(noiseX, noiseY))
