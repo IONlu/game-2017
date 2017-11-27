@@ -10,5 +10,6 @@ export default class ChunkLoader extends Trait {
         super.update(entity, updateData)
 
         this.map.loadChunksByPosition(entity.position.x, entity.position.y)
+        this.map.unloadChunksByPosition(entity.position.x, entity.position.y)
     }
 }

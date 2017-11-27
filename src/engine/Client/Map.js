@@ -290,12 +290,12 @@ export default class Map extends CommonMap {
         return this._loadingChunks[x + ';' + y]
     }
 
-    async loadChunksByPosition (x, y, distance = 1000) {
+    async loadChunksByPosition (x, y, MaxDistance = 1000) {
         // bounding box
-        var chunkX = Math.floor((x - distance) / (8 * CHUNK_SIZE))
-        var chunkX2 = Math.ceil((x + distance) / (8 * CHUNK_SIZE)) + 1
-        var chunkY = Math.floor((y - distance) / (8 * CHUNK_SIZE))
-        var chunkY2 = Math.ceil((y + distance) / (8 * CHUNK_SIZE)) + 1
+        var chunkX = Math.floor((x - MaxDistance) / (8 * CHUNK_SIZE))
+        var chunkX2 = Math.ceil((x + MaxDistance) / (8 * CHUNK_SIZE)) + 1
+        var chunkY = Math.floor((y - MaxDistance) / (8 * CHUNK_SIZE))
+        var chunkY2 = Math.ceil((y + MaxDistance) / (8 * CHUNK_SIZE)) + 1
 
         // load chunks
         let chunksPromise = []
@@ -308,5 +308,20 @@ export default class Map extends CommonMap {
             }
         }
         return Promise.all(chunksPromise)
+    }
+
+    async unloadChunksByPosition (x, y, minDistance = 2000) {
+        let minDistanceSquared = minDistance * minDistance
+        Object.keys(this.chunks).forEach(key => {
+            let { x: chunkX, y: chunkY } = this.chunks[key]
+            let centerX = (chunkX + 0.5) * (8 * CHUNK_SIZE)
+            let centerY = (chunkY + 0.5) * (8 * CHUNK_SIZE)
+            let dx = centerX - x
+            let dy = centerY - y
+            let distanceSquared = (dx * dx) + (dy * dy)
+            if (distanceSquared >= minDistanceSquared) {
+                console.log('unload', chunkX, chunkY)
+            }
+        })
     }
 }
