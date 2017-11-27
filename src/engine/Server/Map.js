@@ -44,6 +44,9 @@ export default class Map extends CommonMap {
     getDirtyChunkData () {
         return Object.keys(this.chunks)
             .filter(key => {
+                if (this.chunks[key].chunk.isDummy) {
+                    return false
+                }
                 let isDirty = this.chunks[key].chunk.isDirty
                 this.chunks[key].chunk.isDirty = false
                 return isDirty
