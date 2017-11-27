@@ -135,4 +135,14 @@ export default class Map extends Entity {
         }
         return this.chunks[x + ';' + y].chunk
     }
+
+    unload (x, y) {
+        if (!this.chunks.hasOwnProperty(x + ';' + y)) {
+            return
+        }
+        if (this.chunks[x + ';' + y].bodyGroup) {
+            World.remove(this.app.physics.world, this.chunks[x + ';' + y].bodyGroup)
+        }
+        delete this.chunks[x + ';' + y]
+    }
 }
