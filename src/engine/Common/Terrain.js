@@ -44,7 +44,7 @@ export const height = x => {
 
 // get tile type by x / y
 export const tile = (x, y) => {
-    if (y < height(x)) {
+    if (-y > height(x)) {
         return undefined
     }
 

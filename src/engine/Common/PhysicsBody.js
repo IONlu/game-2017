@@ -2,7 +2,7 @@ import { Trait } from './Entity'
 import { Bodies, Body, World, Events } from 'matter-js'
 
 export default class PhysicsBody extends Trait {
-    constructor (app, engine) {
+    constructor (app, engine, x = 0, y = 0) {
         super()
         this.app = app
         this.engine = engine
@@ -18,6 +18,9 @@ export default class PhysicsBody extends Trait {
             sleepThreshold: Infinity,
             mass: 2,
             friction: 0.002
+        })
+        Body.setPosition(this.body, {
+            x, y
         })
 
         World.add(this.engine.world, this.body)
