@@ -1,7 +1,5 @@
-import Chance from 'chance'
-import SimplexNoise from 'simplex-noise'
 import { CHUNK_SIZE } from '../../../config'
-import BlockData from '../../../assets/texture/block.json'
+import { tile as getTileType } from '../Terrain.js'
 
 export default class Chunk {
     constructor (size, isDummy = false) {
@@ -43,46 +41,12 @@ export default class Chunk {
     }
 }
 
-const random = seed => {
-    let chance = new Chance(seed)
-    return () => chance.random()
-}
-
-const SEED = 'ION Game 2017'
-const HeightNoise = new SimplexNoise(random(SEED + '::HEIGHT'))
-const BlockNoise = {}
-for (let name in BlockData.frames) {
-    BlockNoise[name] = new SimplexNoise(random(SEED + '::' + name.toUpperCase()))
-}
-
 export const generateData = (x, y) => {
-    let height = []
-    for (let i = 0; i < CHUNK_SIZE; i++) {
-        let valueA = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 1024, 0) * 100
-        let valueB = HeightNoise.noise2D(((x * CHUNK_SIZE) + i) / 43, 0) * 10
-        height.push(valueA + valueB)
-    }
     return new Promise(resolve => {
         let chunkData = []
         for (let j = 0; j < CHUNK_SIZE; j++) {
             for (let i = 0; i < CHUNK_SIZE; i++) {
-                let tile
-                if ((y * CHUNK_SIZE) + j > height[i]) {
-                    let noiseX = ((x * CHUNK_SIZE) + i) / 512
-                    let noiseY = ((y * CHUNK_SIZE) + j) / 512
-                    let noise = []
-                    for (let name in BlockData.frames) {
-                        noise.push(BlockNoise[name].noise2D(noiseX, noiseY))
-                    }
-                    let index = -1
-                    tile = noise.reduce((acc, val) => {
-                        index++
-                        return noise[acc] > val
-                            ? acc
-                            : index
-                    }, 0) + 1
-                }
-                chunkData.push(tile)
+                chunkData.push(getTileType((x * CHUNK_SIZE) + i, (y * CHUNK_SIZE) + j))
             }
         }
         resolve(chunkData)
