@@ -155,13 +155,15 @@
                     this.$map = this.$game.createEntity('Map')
 
                     // start position
-                    let startX = (Math.random() - 0.5) * 1000
-                    let startY = -getTerrainHeight(startX)
+                    let startX = (Math.random() - 0.5) * 10000
+                    let startY = (-getTerrainHeight(startX / 8) * 8) - 14
                     this.$game.camera.position.set(startX, startY)
 
                     for (let i = 0; i < 10; i++) {
                         let ball = this.$game.createEntity('Ball')
-                        ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics))
+                        let x = ((Math.random() - 0.5) * 1000) + startX
+                        let y = (-getTerrainHeight(x / 8) * 8) - 14
+                        ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics, x, y))
                     }
 
                     // start playing
