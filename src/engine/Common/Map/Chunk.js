@@ -9,11 +9,15 @@ export default class Chunk {
         this.clear()
     }
 
-    _getIndexFromPosition (x, y) {
+    _getIndexFromPosition (x, y, background = false) {
         if (x >= this.size || y >= this.size) {
             throw new Error(`[${x},${y}] is out of range`)
         }
-        return x + (y * this.size)
+        let index = (x + (y * this.size)) * 2
+        if (!background) {
+            index += 1
+        }
+        return index
     }
 
     clear () {
@@ -22,22 +26,22 @@ export default class Chunk {
     }
 
     load (tiles) {
-        tiles = tiles.slice(0, this.length)
+        tiles = tiles.slice(0, this.length * 2)
         this.tiles = [
             ...tiles,
-            new Array(this.length - tiles.length)
+            new Array((this.length * 2) - tiles.length)
         ]
         this.isDirty = true
     }
 
-    set (x, y, tileData) {
-        this.tiles[this._getIndexFromPosition(x, y)] = tileData
+    set (x, y, tileData, background = false) {
+        this.tiles[this._getIndexFromPosition(x, y, background)] = tileData
         this.isDirty = true
         return tileData
     }
 
-    get (x, y) {
-        return this.tiles[this._getIndexFromPosition(x, y)]
+    get (x, y, background = false) {
+        return this.tiles[this._getIndexFromPosition(x, y, background)]
     }
 }
 
@@ -46,7 +50,10 @@ export const generateData = (x, y) => {
         let chunkData = []
         for (let j = 0; j < CHUNK_SIZE; j++) {
             for (let i = 0; i < CHUNK_SIZE; i++) {
-                chunkData.push(getTileType((x * CHUNK_SIZE) + i, (y * CHUNK_SIZE) + j))
+                let tileX = (x * CHUNK_SIZE) + i
+                let tileY = (y * CHUNK_SIZE) + j
+                chunkData.push(getTileType(tileX, tileY, true))
+                chunkData.push(getTileType(tileX, tileY))
             }
         }
         resolve(chunkData)

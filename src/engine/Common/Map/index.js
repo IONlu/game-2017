@@ -36,21 +36,22 @@ export default class Map extends Entity {
         return this.createChunkIfNone(x, y)
     }
 
-    getTile (x, y) {
+    getTile (x, y, background = false) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
         return this.getChunk(chunkX, chunkY).get(
             (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
-            (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE
+            (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE,
+            background
         )
     }
 
-    getTileNeighbours (x, y) {
+    getTileNeighbours (x, y, background = false) {
         let neighbours = []
         for (let j = y - 1; j < y + 2; j++) {
             for (let i = x - 1; i < x + 2; i++) {
                 if (i !== x || j !== y) {
-                    neighbours.push(this.getTile(i, j))
+                    neighbours.push(this.getTile(i, j, background))
                 }
             }
         }

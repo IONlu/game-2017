@@ -69,8 +69,8 @@ export const isDungeon = (x, y) => {
 }
 
 // get tile type by x / y
-export const tile = (x, y) => {
-    if (-y > height(x) || isDungeon(x, y)) {
+export const tile = (x, y, background = false) => {
+    if (-y > height(x) || (!background && isDungeon(x, y))) {
         return undefined
     }
 

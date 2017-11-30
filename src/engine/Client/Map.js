@@ -5,6 +5,7 @@ import BlockData from '@/assets/texture/block.json'
 import axios from 'axios'
 
 const TEXTURE_INDEX = Object.keys(BlockData.frames)
+const spriteStack = []
 
 export default class Map extends CommonMap {
     constructor (app) {
@@ -25,16 +26,39 @@ export default class Map extends CommonMap {
         if (!this.chunks.hasOwnProperty(key)) {
             return
         }
-        let { chunk, texture, sprite } = this.chunks[key]
+        let { chunk, texture, sprite, backgroundTexture, backgroundSprite } = this.chunks[key]
+        let screenX = x * 8 * CHUNK_SIZE
+        let screenY = y * 8 * CHUNK_SIZE
+
+        if (!backgroundTexture) {
+            backgroundSprite = spriteStack.pop()
+            if (backgroundSprite) {
+                this.chunks[key].backgroundSprite = backgroundSprite
+                backgroundTexture = this.chunks[key].backgroundTexture = backgroundSprite.texture
+            } else {
+                backgroundTexture = this.chunks[key].backgroundTexture = RenderTexture.create(8 * CHUNK_SIZE, 8 * CHUNK_SIZE)
+                backgroundSprite = this.chunks[key].backgroundSprite = new Sprite(backgroundTexture)
+            }
+            backgroundSprite.x = screenX
+            backgroundSprite.y = screenY
+            this.mapContainer.addChild(backgroundSprite)
+            this._renderChunkToTexture(x, y, chunk, backgroundTexture, true)
+        }
+
         if (!chunk.isDirty) {
             return
         }
         chunk.isDirty = false
 
-        let screenX = x * 8 * CHUNK_SIZE
-        let screenY = y * 8 * CHUNK_SIZE
-
         if (!texture) {
+            sprite = spriteStack.pop()
+            if (sprite) {
+                this.chunks[key].sprite = sprite
+                texture = this.chunks[key].texture = sprite.texture
+            } else {
+                texture = this.chunks[key].texture = RenderTexture.create(8 * CHUNK_SIZE, 8 * CHUNK_SIZE)
+                sprite = this.chunks[key].sprite = new Sprite(texture)
+            }
             texture = this.chunks[key].texture = RenderTexture.create(8 * CHUNK_SIZE, 8 * CHUNK_SIZE)
             sprite = this.chunks[key].sprite = new Sprite(texture)
             sprite.x = screenX
@@ -42,10 +66,17 @@ export default class Map extends CommonMap {
             this.mapContainer.addChild(sprite)
         }
 
+        this._renderChunkToTexture(x, y, chunk, texture)
+
+        // update physics
+        this.updatePhysicsBody(x, y)
+    }
+
+    _renderChunkToTexture (x, y, chunk, texture, background = false) {
         for (var i = 0; i < CHUNK_SIZE; i++) {
             for (var j = 0; j < CHUNK_SIZE; j++) {
-                let tile = chunk.get(i, j)
-                let neighbours = this.getTileNeighbours((x * CHUNK_SIZE) + i, (y * CHUNK_SIZE) + j)
+                let tile = chunk.get(i, j, background)
+                let neighbours = this.getTileNeighbours((x * CHUNK_SIZE) + i, (y * CHUNK_SIZE) + j, background)
 
                 let textureIndex = tile || neighbours[6] || neighbours[1]
                 let tileTexture = Texture.EMPTY
@@ -55,15 +86,15 @@ export default class Map extends CommonMap {
                 }
 
                 let sprite = this.chunkSprites[(j * CHUNK_SIZE) + i]
+                sprite.tint = background
+                    ? 0x666666
+                    : 0xFFFFFF
                 sprite.texture = new Texture(tileTexture, new Rectangle((i % 4) * 8, (j % 4) * 8, 8, 8))
             }
         }
 
         this.app.renderer.render(this.chunkContainer, texture)
         texture.requiresUpdate = true
-
-        // update physics
-        this.updatePhysicsBody(x, y)
     }
 
     generateTileMaskTextures () {
@@ -337,10 +368,12 @@ export default class Map extends CommonMap {
     unload (x, y) {
         if (this.chunks.hasOwnProperty(x + ';' + y)) {
             if (this.chunks[x + ';' + y].sprite) {
-                this.chunks[x + ';' + y].sprite.destroy(true)
+                spriteStack.push(this.chunks[x + ';' + y].sprite)
+                this.mapContainer.removeChild(this.chunks[x + ';' + y].sprite)
             }
-            if (this.chunks[x + ';' + y].texture) {
-                this.chunks[x + ';' + y].texture.destroy(true)
+            if (this.chunks[x + ';' + y].backgroundSprite) {
+                spriteStack.push(this.chunks[x + ';' + y].backgroundSprite)
+                this.mapContainer.removeChild(this.chunks[x + ';' + y].backgroundSprite)
             }
         }
         super.unload(x, y)
