@@ -40,7 +40,7 @@ export default class GameEngine extends GameEngineCommon {
 
         this.mousePosition = new PIXI.Point()
         window.document.addEventListener('mousemove', this._handleMouseMove, true)
-        window.document.addEventListener('blur', this._handleBlur, true)
+        window.document.addEventListener('visibilitychange', this._handleVisibilityChange, true)
     }
 
     createLayer (index) {
@@ -103,22 +103,21 @@ export default class GameEngine extends GameEngineCommon {
         )
     }.bind(this)
 
-    _handleBlur = function () {
-        if (this.isRunning && this.loop.isRunning) {
-            this.loop.stop()
-            let restartLoop = function () {
-                if (this.isRunning && !this.loop.isRunning) {
-                    this.loop.start()
-                }
-                window.document.removeEventListener('blur', restartLoop)
-            }.bind(this)
-            window.document.addEventListener('focus', restartLoop)
+    _handleVisibilityChange = function (evt) {
+        if (evt.target.visibilityState === 'visible') {
+            if (this.isRunning && !this.loop.isRunning) {
+                this.loop.start()
+            }
+        } else {
+            if (this.isRunning && this.loop.isRunning) {
+                this.loop.stop()
+            }
         }
     }.bind(this)
 
     destroy () {
         window.document.removeEventListener('mousemove', this._handleMouseMove, true)
-        window.document.removeEventListener('blur', this._handleBlur, true)
+        window.document.removeEventListener('visibilitychange', this._handleVisibilityChange, true)
 
         super.destroy()
     }
