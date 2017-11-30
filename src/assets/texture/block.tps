@@ -199,12 +199,16 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
+            <key type="filename">block/brick.png</key>
             <key type="filename">block/clay.png</key>
             <key type="filename">block/cobblestone.png</key>
             <key type="filename">block/dirt.png</key>
             <key type="filename">block/gravel.png</key>
+            <key type="filename">block/red_sand.png</key>
             <key type="filename">block/sand.png</key>
+            <key type="filename">block/snow.png</key>
             <key type="filename">block/stone.png</key>
+            <key type="filename">block/stonebrick.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
