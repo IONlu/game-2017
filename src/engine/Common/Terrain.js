@@ -68,10 +68,19 @@ export const isDungeon = (x, y) => {
         )
 }
 
+// check if there is a tile
+export const isTile = (x, y, background = false) => {
+    return -y <= height(x) &&
+        (
+            background ||
+            !isDungeon(x, y)
+        )
+}
+
 // get tile type by x / y
 let renderBlockTypes = [ 'clay', 'dirt', 'gravel', 'sand', 'red_sand', 'stone' ]
 export const tile = (x, y, background = false) => {
-    if (-y > height(x) || (!background && isDungeon(x, y))) {
+    if (!isTile(x, y, background)) {
         return undefined
     }
 
@@ -89,6 +98,17 @@ export const tile = (x, y, background = false) => {
         }
     }
     let blockType = renderBlockTypes[renderTypeIndex]
+
+    if (blockType === 'dirt') {
+        for (let i = x - 1; i <= x + 1; i++) {
+            if (
+                !isTile(i, y - 1, background) &&
+                isTile(x, y + 1, background)
+            ) {
+                return BLOCK_TYPES['grass']
+            }
+        }
+    }
 
     return BLOCK_TYPES[blockType]
 }
