@@ -203,6 +203,7 @@
             <key type="filename">block/clay.png</key>
             <key type="filename">block/cobblestone.png</key>
             <key type="filename">block/dirt.png</key>
+            <key type="filename">block/grass.png</key>
             <key type="filename">block/gravel.png</key>
             <key type="filename">block/red_sand.png</key>
             <key type="filename">block/sand.png</key>
