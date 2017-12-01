@@ -59,8 +59,6 @@ export default class Map extends CommonMap {
                 texture = this.chunks[key].texture = RenderTexture.create(8 * CHUNK_SIZE, 8 * CHUNK_SIZE)
                 sprite = this.chunks[key].sprite = new Sprite(texture)
             }
-            texture = this.chunks[key].texture = RenderTexture.create(8 * CHUNK_SIZE, 8 * CHUNK_SIZE)
-            sprite = this.chunks[key].sprite = new Sprite(texture)
             sprite.x = screenX
             sprite.y = screenY
             this.mapContainer.addChild(sprite)
