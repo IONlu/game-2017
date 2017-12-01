@@ -1,8 +1,9 @@
 import CommonMap from '../Common/Map'
-import { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle } from 'pixi.js'
+import { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle, utils } from 'pixi.js'
 import { CHUNK_SIZE } from '@/config'
 import BlockData from '@/assets/texture/block.json'
 import axios from 'axios'
+import { height as getTerrainHeight } from '../Common/Terrain'
 
 const TEXTURE_INDEX = Object.keys(BlockData.frames)
 const spriteStack = []
@@ -74,7 +75,9 @@ export default class Map extends CommonMap {
         for (var i = 0; i < CHUNK_SIZE; i++) {
             for (var j = 0; j < CHUNK_SIZE; j++) {
                 let tile = chunk.get(i, j, background)
-                let neighbours = this.getTileNeighbours((x * CHUNK_SIZE) + i, (y * CHUNK_SIZE) + j, background)
+                let tileX = (x * CHUNK_SIZE) + i
+                let tileY = (y * CHUNK_SIZE) + j
+                let neighbours = this.getTileNeighbours(tileX, tileY, background)
 
                 let textureIndex = tile || neighbours[6] || neighbours[1]
                 let tileTexture = Texture.EMPTY
@@ -83,12 +86,20 @@ export default class Map extends CommonMap {
                     tileTexture = this.maskedTextures[TEXTURE_INDEX[textureIndex - 1]][maskIndex]
                 }
 
+                let heightDiff = tileY + getTerrainHeight(tileX)
+                let darkness = 1
+                if (heightDiff > 50) {
+                    darkness = 0.1
+                } else if (heightDiff > 0) {
+                    darkness = Math.max(0.1, 1 - (heightDiff / 50))
+                }
+
                 let sprite = this.chunkSprites[(j * CHUNK_SIZE) + i]
                 if (background) {
-                    sprite.tint = 0x666666
+                    sprite.tint = utils.rgb2hex([0.5, 0.5, 0.5].map(color => color * darkness))
                     sprite.texture = new Texture(tileTexture, new Rectangle(((i + 1) % 4) * 8, ((j + 1) % 4) * 8, 8, 8))
                 } else {
-                    sprite.tint = 0xFFFFFF
+                    sprite.tint = utils.rgb2hex([1, 1, 1].map(color => color * darkness))
                     sprite.texture = new Texture(tileTexture, new Rectangle((i % 4) * 8, (j % 4) * 8, 8, 8))
                 }
             }
