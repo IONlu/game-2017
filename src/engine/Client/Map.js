@@ -86,10 +86,13 @@ export default class Map extends CommonMap {
                 }
 
                 let sprite = this.chunkSprites[(j * CHUNK_SIZE) + i]
-                sprite.tint = background
-                    ? 0x666666
-                    : 0xFFFFFF
-                sprite.texture = new Texture(tileTexture, new Rectangle((i % 4) * 8, (j % 4) * 8, 8, 8))
+                if (background) {
+                    sprite.tint = 0x666666
+                    sprite.texture = new Texture(tileTexture, new Rectangle(((i + 1) % 4) * 8, ((j + 1) % 4) * 8, 8, 8))
+                } else {
+                    sprite.tint = 0xFFFFFF
+                    sprite.texture = new Texture(tileTexture, new Rectangle((i % 4) * 8, (j % 4) * 8, 8, 8))
+                }
             }
         }
 
