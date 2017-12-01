@@ -69,23 +69,24 @@ export const isDungeon = (x, y) => {
 }
 
 // get tile type by x / y
+let renderBlockTypes = [ 'clay', 'dirt', 'gravel', 'sand', 'red_sand', 'stone' ]
 export const tile = (x, y, background = false) => {
     if (-y > height(x) || (!background && isDungeon(x, y))) {
         return undefined
     }
 
-    let noise = []
-    for (let name in BlockData.frames) {
-        noise.push(BlockNoise[name].noise2D(
+    let noise = renderBlockTypes.map(name => {
+        return BlockNoise[name].noise2D(
             (x / 512) + offset(name),
             (y / 512) + offset(name)
-        ))
-    }
+        )
+    })
     let type = -1
-    return noise.reduce((acc, val) => {
+    let index = noise.reduce((acc, val) => {
         type++
         return noise[acc] > val
             ? acc
             : type
-    }, 0) + 1
+    }, 0)
+    return BLOCK_TYPES[renderBlockTypes[index]]
 }
