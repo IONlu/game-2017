@@ -81,12 +81,14 @@ export const tile = (x, y, background = false) => {
             (y / 512) + offset(name)
         )
     })
-    let type = -1
-    let index = noise.reduce((acc, val) => {
-        type++
-        return noise[acc] > val
-            ? acc
-            : type
-    }, 0)
-    return BLOCK_TYPES[renderBlockTypes[index]]
+
+    let renderTypeIndex = 0
+    for (let i = 1; i < renderBlockTypes.length; i++) {
+        if (noise[i] > noise[renderTypeIndex]) {
+            renderTypeIndex = i
+        }
+    }
+    let blockType = renderBlockTypes[renderTypeIndex]
+
+    return BLOCK_TYPES[blockType]
 }
