@@ -33,7 +33,6 @@ export default class Player extends Entity {
                     )
                 )
             })
-            console.log(this.animationTextures)
         }
     }
 
