@@ -34,7 +34,7 @@ export default class Loop extends EventEmitter {
             }
 
             // handle render
-            this.emit('render', (this.delta - this.lastFrameTime + now) / this.delta)
+            this.emit('render', (this.delta - this.lastFrameTime + now) / this.delta, now)
 
             // start next frame
             this._nextFrame()

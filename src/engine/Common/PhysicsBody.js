@@ -35,14 +35,17 @@ export default class PhysicsBody extends Trait {
 
     update (entity, updateData) {
         super.update(entity, updateData)
+        entity.currentAnimation = 'default'
 
         if (this.app.keyboard.isDown(37) && !this.isCollidingLeft) {
+            entity.currentAnimation = 'run'
             Body.setVelocity(this.body, {
                 x: Math.max(-4, this.body.velocity.x - 1),
                 y: this.body.velocity.y
             })
         }
         if (this.app.keyboard.isDown(39) && !this.isCollidingRight) {
+            entity.currentAnimation = 'run'
             Body.setVelocity(this.body, {
                 x: Math.min(4, this.body.velocity.x + 1),
                 y: this.body.velocity.y
@@ -53,6 +56,9 @@ export default class PhysicsBody extends Trait {
                 x: this.body.velocity.x,
                 y: Math.max(-5, this.body.velocity.y - 5)
             })
+        }
+        if ((this.app.keyboard.isDown(38) || this.app.keyboard.isDown(32)) && !this.isCollidingBottom) {
+            entity.currentAnimation = 'jump'
         }
 
         entity.position.set(this.body.position.x, this.body.position.y)

@@ -59,10 +59,10 @@ export default class GameEngine extends GameEngineCommon {
         super.update()
     }
 
-    render (delta) {
+    render (dtime, time) {
         this.entities.forEach(entity => {
             if (entity.handleRender) {
-                entity.handleRender(delta)
+                entity.handleRender(dtime, time)
             }
         })
 

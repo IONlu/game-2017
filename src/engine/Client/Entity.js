@@ -3,10 +3,10 @@ import CommonEntity from '../Common/Entity'
 export default class Entity extends CommonEntity {
     render (t) {}
 
-    handleRender (t) {
-        this.render(t)
+    handleRender (dtime, time) {
+        this.render(dtime, time)
         this.traits.forEach(trait => {
-            trait.render(this, t)
+            trait.render(this, dtime, time)
         })
     }
 }
