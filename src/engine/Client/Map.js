@@ -89,9 +89,9 @@ export default class Map extends CommonMap {
                 let heightDiff = tileY + getTerrainHeight(tileX)
                 let darkness = 1
                 if (heightDiff > 50) {
-                    darkness = 0.1
+                    darkness = 0.05
                 } else if (heightDiff > 0) {
-                    darkness = Math.max(0.1, 1 - (heightDiff / 50))
+                    darkness = Math.max(0.05, 1 - (heightDiff / 50))
                 }
 
                 let sprite = this.chunkSprites[(j * CHUNK_SIZE) + i]
