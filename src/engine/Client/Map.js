@@ -71,6 +71,17 @@ export default class Map extends CommonMap {
         this.updatePhysicsBody(x, y)
     }
 
+    darkness (tileX, tileY) {
+        let heightDiff = tileY + getTerrainHeight(tileX)
+        let darkness = 1
+        if (heightDiff > 50) {
+            darkness = 0.05
+        } else if (heightDiff > 0) {
+            darkness = Math.max(0.05, 1 - (heightDiff / 50))
+        }
+        return darkness
+    }
+
     _renderChunkToTexture (x, y, chunk, texture, background = false) {
         for (var i = 0; i < CHUNK_SIZE; i++) {
             for (var j = 0; j < CHUNK_SIZE; j++) {
@@ -86,13 +97,7 @@ export default class Map extends CommonMap {
                     tileTexture = this.maskedTextures[TEXTURE_INDEX[textureIndex - 1]][maskIndex]
                 }
 
-                let heightDiff = tileY + getTerrainHeight(tileX)
-                let darkness = 1
-                if (heightDiff > 50) {
-                    darkness = 0.05
-                } else if (heightDiff > 0) {
-                    darkness = Math.max(0.05, 1 - (heightDiff / 50))
-                }
+                let darkness = this.darkness(tileX, tileY)
 
                 let sprite = this.chunkSprites[(j * CHUNK_SIZE) + i]
                 if (background) {
