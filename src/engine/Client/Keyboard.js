@@ -1,45 +1,35 @@
 export default class Keyboard {
-    constructor (node) {
+    constructor (node, controller) {
         this.node = node
-        this.current = []
-        this.mirror = []
+        this.controller = controller
+        this.mapping = {}
 
         this.node.addEventListener('keydown', this._handleKeyDown, true)
         this.node.addEventListener('keyup', this._handleKeyUp, true)
         window.document.addEventListener('blur', this._handleBlur, true)
     }
 
-    update () {
-        this.mirror = [ ...this.current ]
-    }
-
-    isDown (key) {
-        return this.mirror.indexOf(key) > -1
+    map (keyCode, name) {
+        this.mapping[keyCode] = name
+        return this
     }
 
     _handleKeyDown = function (evt) {
-        if (evt.isTrusted) {
-            var code = evt.keyCode
-            var index = this.current.indexOf(code)
-            if (index === -1) {
-                this.current.push(code)
-            }
+        if (evt.isTrusted && this.mapping.hasOwnProperty(evt.keyCode)) {
+            this.controller.start(this.mapping[evt.keyCode])
         }
     }.bind(this)
 
     _handleKeyUp = function (evt) {
-        if (evt.isTrusted) {
-            var code = evt.keyCode
-            var index = this.current.indexOf(code)
-            if (index > -1) {
-                this.current.splice(index, 1)
-            }
+        if (evt.isTrusted && this.mapping.hasOwnProperty(evt.keyCode)) {
+            this.controller.stop(this.mapping[evt.keyCode])
         }
     }.bind(this)
 
     _handleBlur = function () {
-        this.current = []
-        this.mirror = []
+        for (let keyCode in this.mapping) {
+            this.controller.stop(this.mapping[keyCode])
+        }
     }.bind(this)
 
     destroy () {

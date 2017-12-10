@@ -103,6 +103,7 @@
     import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
     import AttachTextTrait from '../engine/Client/Trait/AttachText'
     import PositionDialogTrait from '../engine/Client/Trait/PositionDialog'
+    import Keyboard from '../engine/Client/Keyboard'
 
     import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
@@ -149,6 +150,16 @@
             this.$game.add('block', BlockImage)
             this.$game.add('player', PlayerImage)
             this.$game.add('ball', BallImage)
+
+            this.$keyboard = new Keyboard(document.body, this.$game.controller)
+            this.$keyboard
+                .map(37, 'left')
+                .map(65, 'left')
+                .map(39, 'right')
+                .map(68, 'right')
+                .map(87, 'jump')
+                .map(38, 'jump')
+                .map(32, 'jump')
 
             this.$game.load()
                 .then(() => {

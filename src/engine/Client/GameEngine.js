@@ -1,5 +1,4 @@
 import GameEngineCommon from '../Common/GameEngine'
-import Keyboard from './Keyboard'
 import Camera from './Camera'
 import * as PIXI from 'pixi.js'
 
@@ -30,9 +29,6 @@ export default class GameEngine extends GameEngineCommon {
         this.ui = this.createLayer()
         this.camera = new Camera(this)
 
-        // TODO: bind to game node
-        this.keyboard = new Keyboard(document.body)
-
         this.loop.on('render', this.render.bind(this))
 
         this.viewBoxGraphics = new PIXI.Graphics()
@@ -51,12 +47,6 @@ export default class GameEngine extends GameEngineCommon {
             this.layers.addChild(layer)
         }
         return layer
-    }
-
-    update () {
-        this.keyboard.update()
-
-        super.update()
     }
 
     render (dtime, time) {
