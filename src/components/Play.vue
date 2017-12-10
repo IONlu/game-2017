@@ -151,11 +151,12 @@
             this.$game.add('player', PlayerImage)
             this.$game.add('ball', BallImage)
 
-            this.$keyboard = new Keyboard(document.body, this.$game.controller)
-            this.$keyboard
-                .map([ 37, 65 ], 'left')
-                .map([ 39, 68 ], 'right')
-                .map([ 87, 38, 32 ], 'jump')
+            this.$keyboard = new Keyboard(document.body)
+            this.$keyboard.bind(this.$game.controller, {
+                left: [ 37, 65 ],
+                right: [ 39, 68 ],
+                jump: [ 87, 38, 32 ]
+            })
 
             this.$game.load()
                 .then(() => {
