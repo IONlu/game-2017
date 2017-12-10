@@ -9,8 +9,11 @@ export default class Keyboard {
         window.document.addEventListener('blur', this._handleBlur, true)
     }
 
-    map (keyCode, name) {
-        this.mapping[keyCode] = name
+    map (keyCodes, name) {
+        keyCodes = keyCodes instanceof Array ? keyCodes : [ keyCodes ]
+        keyCodes.forEach(keyCode => {
+            this.mapping[keyCode] = name
+        })
         return this
     }
 

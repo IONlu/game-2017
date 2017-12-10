@@ -153,13 +153,9 @@
 
             this.$keyboard = new Keyboard(document.body, this.$game.controller)
             this.$keyboard
-                .map(37, 'left')
-                .map(65, 'left')
-                .map(39, 'right')
-                .map(68, 'right')
-                .map(87, 'jump')
-                .map(38, 'jump')
-                .map(32, 'jump')
+                .map([ 37, 65 ], 'left')
+                .map([ 39, 68 ], 'right')
+                .map([ 87, 38, 32 ], 'jump')
 
             this.$game.load()
                 .then(() => {
