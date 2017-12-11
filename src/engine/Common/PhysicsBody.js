@@ -61,6 +61,7 @@ export default class PhysicsBody extends Trait {
             entity.currentAnimation = 'jump'
         }
 
+        console.log('position', this.body.position)
         entity.position.set(this.body.position.x, this.body.position.y)
         entity.rotation = this.body.angle
 

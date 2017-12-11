@@ -19,9 +19,11 @@ export default class Entity {
         this.traits = []
     }
 
-    addTrait (trait) {
+    addTrait (trait, name) {
         this.traits.push(trait)
-        this[trait.constructor.name] = trait
+        if (name) {
+            this[name] = trait
+        }
     }
 
     update (updateData) {
@@ -35,6 +37,15 @@ export default class Entity {
         this.update(updateData)
         this.traits.forEach(trait => {
             trait.update(this, updateData)
+        })
+    }
+
+    render (t) {}
+
+    handleRender (dtime, time) {
+        this.render(dtime, time)
+        this.traits.forEach(trait => {
+            trait.render(this, dtime, time)
         })
     }
 

@@ -20,11 +20,11 @@ export default class GameEngine {
         this.loop.on('update', this.update.bind(this))
     }
 
-    createEntity (entityName) {
+    createEntity (entityName, options = {}) {
         var ID = nextEntityID
         nextEntityID++
 
-        var entity = Factory.create(entityName, this)
+        var entity = Factory.create(entityName, this, options)
 
         entity.ID = ID
         entity.name = entityName

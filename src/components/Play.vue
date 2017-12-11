@@ -105,7 +105,6 @@
     import PositionDialogTrait from '../engine/Client/Trait/PositionDialog'
     import Keyboard from '../engine/Client/Keyboard'
 
-    import PhysicsBody from '../engine/Common/PhysicsBody'
     import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
 
     import BlockImage from '../assets/texture/block.png'
@@ -176,10 +175,13 @@
 
                     // start playing
                     this.$socket.on('start', ({ id }) => {
-                        this.$player = this.$game.createEntity('Player')
-                        this.$player.position.set(startX, startY)
+                        this.$player = this.$game.createEntity('Player', {
+                            position: {
+                                x: startX,
+                                y: startY
+                            }
+                        })
 
-                        this.$player.addTrait(new PhysicsBody(this.$game, this.$game.physics, startX, startY))
                         this.$player.addTrait(new NetworkSendTrait(this.$socket))
                         this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
@@ -189,6 +191,8 @@
                         this.$player.addTrait(this.$tool)
 
                         this.$player.ENTITY_ID = id
+
+                        this.$player.setController(this.$game.controller)
 
                         this.isPlaying = true
                     })

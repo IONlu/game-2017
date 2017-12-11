@@ -1,7 +1,7 @@
-import Entity from './Entity'
+import CommonPlayer from '../Common/Player'
 import { Sprite, Texture, Rectangle } from 'pixi.js'
 
-export default class Player extends Entity {
+export default class Player extends CommonPlayer {
     constructor (app) {
         super(app)
 
@@ -36,8 +36,15 @@ export default class Player extends Entity {
         }
     }
 
-    onCollision (entity) {
-        console.log(entity)
+    update (updateData) {
+        super.update(updateData)
+
+        this.currentAnimation = 'default'
+        if (this.isJumping) {
+            this.currentAnimation = 'jump'
+        } else if (this.isRunning) {
+            this.currentAnimation = 'run'
+        }
     }
 
     render (dtime, time) {
