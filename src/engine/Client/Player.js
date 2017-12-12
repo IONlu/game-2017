@@ -62,6 +62,18 @@ export default class Player extends CommonPlayer {
 
         // upate texture
         this.sprite.texture = this.animationTextures[this.currentAnimation][Math.floor(time / 200) % this.animationTextures[this.currentAnimation].length]
+
+        // turn sprite in mouse direction
+        let targetPosition = this.app.screenToWorldPosition(
+            this.app.mousePosition.x,
+            this.app.mousePosition.y
+        )
+        if (targetPosition.x - this.sprite.position.x > 0) {
+            this.sprite.scale.x = Math.abs(this.sprite.scale.x)
+        }
+        if (targetPosition.x - this.sprite.position.x < 0) {
+            this.sprite.scale.x = -Math.abs(this.sprite.scale.x)
+        }
     }
 
     destroy () {
