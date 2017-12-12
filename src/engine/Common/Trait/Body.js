@@ -42,6 +42,7 @@ const BodyTrait = class Body extends Trait {
     }
 
     update (entity, updateData) {
+        this.colliding = 0
         super.update(entity, updateData)
 
         entity.position.set(this.body.position.x, this.body.position.y)
@@ -56,7 +57,6 @@ const BodyTrait = class Body extends Trait {
     }
 
     _handleCollision = function (evt) {
-        this.colliding = 0
         let collisions = evt.pairs.filter(collision => {
             if (collision.bodyA !== this.body && collision.bodyB !== this.body) {
                 return false
@@ -65,19 +65,19 @@ const BodyTrait = class Body extends Trait {
         })
 
         collisions.forEach(({ collision }) => {
-            if (Math.abs(collision.tangent.x) > 0 && this.body.velocity.y <= 0) {
-                this.colliding += BodyTrait.COLLISION_DIRECTION_BOTTOM
+            if (Math.abs(collision.tangent.x) > 0) {
+                this.colliding |= collision.penetration.y < 0
+                    ? BodyTrait.COLLISION_DIRECTION_BOTTOM
+                    : BodyTrait.COLLISION_DIRECTION_TOP
             }
-            if (Math.abs(collision.tangent.x) > 0 && this.body.velocity.y > 0) {
-                this.colliding += BodyTrait.COLLISION_DIRECTION_TOP
-            }
-            if (Math.abs(collision.tangent.y) > 0 && this.body.velocity.x > 0) {
-                this.colliding += BodyTrait.COLLISION_DIRECTION_RIGHT
-            }
-            if (Math.abs(collision.tangent.y) > 0 && this.body.velocity.x < 0) {
-                this.colliding += BodyTrait.COLLISION_DIRECTION_LEFT
+            if (Math.abs(collision.tangent.y) > 0) {
+                this.colliding |= collision.penetration.x < 0
+                    ? BodyTrait.COLLISION_DIRECTION_RIGHT
+                    : BodyTrait.COLLISION_DIRECTION_LEFT
             }
         })
+
+        this.collisionData = collisions
     }.bind(this)
 
     destroy () {
