@@ -98,15 +98,12 @@
     import PlayerEntity from '../engine/Client/Player'
     import BallEntity from '../engine/Client/Ball'
     import ToolTrait from '../engine/Client/Tool'
-    // import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
     import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
     import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
     import AttachTextTrait from '../engine/Client/Trait/AttachText'
     import PositionDialogTrait from '../engine/Client/Trait/PositionDialog'
     import Keyboard from '../engine/Client/Keyboard'
     import Controller from '../engine/Common/Controller'
-
-    // import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
@@ -155,7 +152,8 @@
             this.$keyboard.bind(this.$controller, {
                 left: [ 37, 65 ],
                 right: [ 39, 68 ],
-                jump: [ 87, 38, 32 ]
+                jump: [ 87, 38, 32 ],
+                ball: [ 66 ]
             })
 
             this.$controller.on('start', name => {
@@ -169,20 +167,12 @@
                 .then(() => {
                     this.$map = this.$game.createEntity('Map')
 
-                    /* for (let i = 0; i < 10; i++) {
-                        let ball = this.$game.createEntity('Ball')
-                        let x = ((Math.random() - 0.5) * 1000) + startX
-                        let y = (-getTerrainHeight(x / 8) * 8) - 14
-                        ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics, x, y))
-                    } */
-
                     // start playing
                     this.$socket.on('start', ({ id, position }) => {
                         this.$player = this.$game.createEntity('Player', {
                             position
                         })
 
-                        // this.$player.addTrait(new NetworkSendTrait(this.$socket))
                         this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
                         this.$player.addTrait(new PositionDialogTrait(this.$game))
@@ -197,8 +187,9 @@
                         this.isPlaying = true
                     })
 
-                    // remote players
+                    // remote entities
                     let remotePlayers = {}
+                    let balls = {}
                     this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
                             let SERVER_ENTITY_ID = parseInt(key, 10)
@@ -225,6 +216,19 @@
 
                         data.chunks.forEach(chunk => {
                             this.$map._handleChunkData(chunk.x, chunk.y, chunk.data)
+                        })
+
+                        Object.keys(balls).forEach(key => {
+                            if (!data.balls.hasOwnProperty(key)) {
+                                this.$game.destroyEntity(balls[key])
+                                delete balls[key]
+                            }
+                        })
+                        Object.keys(data.balls).forEach(key => {
+                            if (!balls.hasOwnProperty(key)) {
+                                balls[key] = this.$game.createEntity('Ball')
+                            }
+                            balls[key].body.importState(data.balls[key].data)
                         })
                     })
 

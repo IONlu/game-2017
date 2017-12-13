@@ -8,6 +8,7 @@ import GameEngine from './engine/Common/GameEngine'
 import Loop from './engine/Server/Loop'
 import MapEntity from './engine/Server/Map'
 import PlayerEntity from './engine/Common/Player'
+import BallEntity from './engine/Common/Ball'
 import Controller from './engine/Common/Controller'
 import { height as getTerrainHeight } from './engine/Common/Terrain'
 import ChunkLoaderTrait from './engine/Server/Trait/ChunkLoader'
@@ -22,6 +23,7 @@ global.HTMLElement = class DummyHTMLElement {}
 
 Factory.add('Map', MapEntity)
 Factory.add('Player', PlayerEntity)
+Factory.add('Ball', BallEntity)
 
 const game = new GameEngine(new Loop(60))
 const map = game.createEntity('Map')
@@ -68,13 +70,13 @@ const createPlayer = (name) => {
     return player
 }
 
-const destroyEntity = entity => {
+const destroyPlayer = entity => {
     let index = players.indexOf(entity)
     if (index > -1) {
         players.splice(index, 1)
     }
 
-    game.destroyEntity(entity)
+    game.destroyPlayer(entity)
 }
 
 const playerData = () => {
@@ -88,17 +90,61 @@ const playerData = () => {
     return data
 }
 
+let balls = []
+const createBall = (x) => {
+    let startX = x
+    let startY = (-getTerrainHeight(startX / 8) * 8) - 100
+
+    let ball = game.createEntity('Ball', {
+        position: {
+            x: startX,
+            y: startY
+        }
+    })
+
+    balls.push(ball)
+
+    return ball
+}
+
+/* const destroyBall = entity => {
+    let index = balls.indexOf(entity)
+    if (index > -1) {
+        balls.splice(index, 1)
+    }
+
+    game.destroyPlayer(entity)
+} */
+
+const ballsData = () => {
+    let data = {}
+    balls.forEach(entity => {
+        data[entity.ENTITY_ID] = {
+            data: entity.body.exportState()
+        }
+    })
+    return data
+}
+
 // handle socket io connections
 io.on('connection', socket => {
     socket.on('disconnect', () => {
         if (socket.entity) {
-            destroyEntity(socket.entity)
+            destroyPlayer(socket.entity)
         }
     })
 
     socket.on('controller.start', data => {
         if (socket.entity) {
-            socket.entity.controller.start(data)
+            switch (data) {
+                case 'ball':
+                    createBall(socket.entity.body.body.position.x)
+                    break
+
+                default:
+                    socket.entity.controller.start(data)
+                    break
+            }
         }
     })
 
@@ -136,6 +182,7 @@ io.on('connection', socket => {
 setInterval(() => {
     io.sockets.emit('update', {
         player: playerData(),
+        balls: ballsData(),
         chunks: map.getDirtyChunkData()
     })
 }, 100)

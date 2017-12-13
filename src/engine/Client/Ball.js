@@ -1,7 +1,7 @@
-import Entity from './Entity'
+import CommonBall from '../Common/Ball'
 import { Sprite, Texture } from 'pixi.js'
 
-export default class Player extends Entity {
+export default class Ball extends CommonBall {
     constructor (app) {
         super(app)
 
