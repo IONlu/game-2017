@@ -190,7 +190,7 @@
                         this.$tool = new ToolTrait(this.$game, this.$map, this.$socket)
                         this.$player.addTrait(this.$tool)
 
-                        this.$player.ENTITY_ID = id
+                        this.$player.SERVER_ENTITY_ID = id
 
                         this.$player.setController(this.$game.controller)
 
@@ -201,8 +201,8 @@
                     let remotePlayers = {}
                     this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
-                            let ENTITY_ID = parseInt(key, 10)
-                            if (this.$player && ENTITY_ID === this.$player.ENTITY_ID) {
+                            let SERVER_ENTITY_ID = parseInt(key, 10)
+                            if (this.$player && SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID) {
                                 return
                             }
                             if (!data.player.hasOwnProperty(key)) {
@@ -211,8 +211,8 @@
                             }
                         })
                         Object.keys(data.player).forEach(key => {
-                            let ENTITY_ID = parseInt(key, 10)
-                            if (this.$player && ENTITY_ID === this.$player.ENTITY_ID) {
+                            let SERVER_ENTITY_ID = parseInt(key, 10)
+                            if (this.$player && SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID) {
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {

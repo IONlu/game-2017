@@ -1,5 +1,7 @@
 import Vector from './Vector'
 
+let NEXT_ENTITY_ID = 1
+
 export class Trait {
     update (entity, updateData) {
     }
@@ -13,6 +15,9 @@ export class Trait {
 
 export default class Entity {
     constructor (app) {
+        this.ENTITY_ID = NEXT_ENTITY_ID
+        NEXT_ENTITY_ID++
+
         this.app = app
         this.position = new Vector(0, 0)
         this.rotation = 0
