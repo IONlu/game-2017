@@ -216,11 +216,16 @@
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
-                                remotePlayers[key] = this.$game.createEntity('Player')
+                                remotePlayers[key] = this.$game.createEntity('Player', {
+                                    position: {
+                                        x: data.player[key].data[0],
+                                        y: data.player[key].data[1]
+                                    }
+                                })
                                 remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
                             } else {
-                                remotePlayers[key].position.set(data.player[key].data[0], data.player[key].data[1])
-                                remotePlayers[key].rotation = data.player[key].data[2]
+                                remotePlayers[key].body.setPosition(data.player[key].data[0], data.player[key].data[1])
+                                // remotePlayers[key].rotation = data.player[key].data[2]
                             }
                         })
 
