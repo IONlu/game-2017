@@ -80,11 +80,7 @@ const playerData = () => {
     players.forEach(entity => {
         data[entity.ENTITY_ID] = {
             name: entity.PLAYER_NAME,
-            data: [
-                entity.body.body.position.x,
-                entity.body.body.position.y,
-                entity.body.body.angle
-            ]
+            data: entity.body.exportState()
         }
     })
     return data
@@ -100,7 +96,6 @@ io.on('connection', socket => {
 
     socket.on('controller.start', data => {
         if (socket.entity) {
-            console.log(socket.entity.PLAYER_NAME, 'start', data)
             socket.entity.controller.start(data)
         }
     })

@@ -213,20 +213,14 @@
                         Object.keys(data.player).forEach(key => {
                             let SERVER_ENTITY_ID = parseInt(key, 10)
                             if (this.$player && SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID) {
+                                this.$player.body.importState(data.player[key].data)
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
-                                remotePlayers[key] = this.$game.createEntity('Player', {
-                                    position: {
-                                        x: data.player[key].data[0],
-                                        y: data.player[key].data[1]
-                                    }
-                                })
+                                remotePlayers[key] = this.$game.createEntity('Player')
                                 remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
-                            } else {
-                                remotePlayers[key].body.setPosition(data.player[key].data[0], data.player[key].data[1])
-                                // remotePlayers[key].rotation = data.player[key].data[2]
                             }
+                            remotePlayers[key].body.importState(data.player[key].data)
                         })
 
                         data.chunks.forEach(chunk => {

@@ -6,6 +6,10 @@ import {
     Vector as MatterVector
 } from 'matter-js'
 
+const lerp = (a, b, n) => {
+    return (1 - n) * a + n * b
+}
+
 const BodyTrait = class Body extends Trait {
     constructor (engine, body) {
         super()
@@ -87,6 +91,28 @@ const BodyTrait = class Body extends Trait {
 
         this.collisionData = collisions
     }.bind(this)
+
+    exportState () {
+        return {
+            angle: this.body.angle,
+            angularVelocity: this.body.angularVelocity,
+            position: this.body.position,
+            velocity: this.body.velocity
+        }
+    }
+
+    importState (state, interpolate = 1) {
+        MatterBody.setAngle(this.body, lerp(this.body.angle, state.angle, interpolate))
+        MatterBody.setAngularVelocity(this.body, lerp(this.body.angularVelocity, state.angularVelocity, interpolate))
+        MatterBody.setPosition(this.body, {
+            x: lerp(this.body.position.x, state.position.x, interpolate),
+            y: lerp(this.body.position.y, state.position.y, interpolate)
+        })
+        MatterBody.setVelocity(this.body, {
+            x: lerp(this.body.velocity.x, state.velocity.x, interpolate),
+            y: lerp(this.body.velocity.y, state.velocity.y, interpolate)
+        })
+    }
 
     destroy () {
         this.removeFromWorld()
