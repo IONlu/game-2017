@@ -72,4 +72,23 @@ export default class Map extends CommonMap {
                 }
             })
     }
+
+    setTiles (tiles, type = null) {
+        super.setTiles(tiles, type)
+
+        let chunks = {}
+        tiles.forEach(tile => {
+            let chunkX = Math.floor(tile.x / CHUNK_SIZE)
+            let chunkY = Math.floor(tile.y / CHUNK_SIZE)
+            if (!chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
+                chunks[chunkX + ';' + chunkY] = {
+                    x: chunkX,
+                    y: chunkY
+                }
+            }
+        })
+        for (let key in chunks) {
+            this.updatePhysicsBody(chunks[key].x, chunks[key].y)
+        }
+    }
 }
