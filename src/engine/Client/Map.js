@@ -31,6 +31,10 @@ export default class Map extends CommonMap {
         let screenX = x * 8 * CHUNK_SIZE
         let screenY = y * 8 * CHUNK_SIZE
 
+        if (chunk.isDummy) {
+            return
+        }
+
         if (!backgroundTexture) {
             backgroundSprite = spriteStack.pop()
             if (backgroundSprite) {
