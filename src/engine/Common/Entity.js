@@ -1,6 +1,7 @@
 import Vector from './Vector'
 
 let NEXT_ENTITY_ID = 1
+let entities = {}
 
 export class Trait {
     update (entity, updateData) {
@@ -13,10 +14,17 @@ export class Trait {
     }
 }
 
+export const getById = (id) => {
+    return entities.hasOwnProperty(id)
+        ? entities[id]
+        : undefined
+}
+
 export default class Entity {
     constructor (app) {
         this.ENTITY_ID = NEXT_ENTITY_ID
         NEXT_ENTITY_ID++
+        entities[this.ENTITY_ID] = this
 
         this.app = app
         this.position = new Vector(0, 0)
@@ -55,6 +63,7 @@ export default class Entity {
     }
 
     destroy () {
+        delete entities[this.ENTITY_ID]
         while (this.traits.length) {
             let trait = this.traits.pop()
             trait.destroy()
