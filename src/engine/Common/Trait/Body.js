@@ -2,7 +2,8 @@ import { Trait } from '../Entity'
 import {
     World as MatterWorld,
     Events as MatterEvents,
-    Body as MatterBody
+    Body as MatterBody,
+    Vector as MatterVector
 } from 'matter-js'
 
 const BodyTrait = class Body extends Trait {
@@ -65,19 +66,20 @@ const BodyTrait = class Body extends Trait {
         })
 
         collisions.forEach(({ collision }) => {
+            let collisionVector = collision.bodyA === this.body
+                ? MatterVector.neg(collision.normal)
+                : MatterVector.clone(collision.normal)
             if (
-                Math.abs(collision.tangent.y) > Math.abs(collision.tangent.x) &&
-                Math.abs(collision.penetration.x) > Math.abs(collision.penetration.y)
+                Math.abs(collisionVector.x) >= Math.abs(collisionVector.y)
             ) {
-                this.colliding |= collision.penetration.x < 0
+                this.colliding |= collisionVector.x > 0
                     ? BodyTrait.COLLISION_DIRECTION_RIGHT
                     : BodyTrait.COLLISION_DIRECTION_LEFT
             }
             if (
-                Math.abs(collision.tangent.x) > Math.abs(collision.tangent.y) &&
-                Math.abs(collision.penetration.y) > Math.abs(collision.penetration.x)
+                Math.abs(collisionVector.y) >= Math.abs(collisionVector.x)
             ) {
-                this.colliding |= collision.penetration.y < 0
+                this.colliding |= collisionVector.y > 0
                     ? BodyTrait.COLLISION_DIRECTION_BOTTOM
                     : BodyTrait.COLLISION_DIRECTION_TOP
             }
