@@ -27,7 +27,7 @@ export default class Map extends CommonMap {
         return this._loadingChunks[x + ';' + y]
     }
 
-    loadChunksByPosition (x = 0, y = 0, maxDistance = 10000) {
+    loadChunksByPosition (x = 0, y = 0, maxDistance = 1000) {
         // bounding box
         var chunkX1 = Math.floor((x - maxDistance) / (8 * CHUNK_SIZE))
         var chunkX2 = Math.ceil((x + maxDistance) / (8 * CHUNK_SIZE))

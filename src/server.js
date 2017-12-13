@@ -10,6 +10,7 @@ import MapEntity from './engine/Server/Map'
 import PlayerEntity from './engine/Common/Player'
 import Controller from './engine/Common/Controller'
 import { height as getTerrainHeight } from './engine/Common/Terrain'
+import ChunkLoaderTrait from './engine/Server/Trait/ChunkLoader'
 
 const PORT = 4200
 const app = express()
@@ -60,6 +61,7 @@ const createPlayer = (name) => {
     })
     player.PLAYER_NAME = name.slice(0, 10)
     player.setController(new Controller())
+    player.addTrait(new ChunkLoaderTrait(map))
 
     players.push(player)
 
@@ -109,13 +111,16 @@ io.on('connection', socket => {
     socket.on('start', name => {
         socket.entity = createPlayer(name)
 
-        socket.emit('start', {
-            id: socket.entity.ENTITY_ID,
-            position: {
-                x: socket.entity.body.body.position.x,
-                y: socket.entity.body.body.position.y
-            }
-        })
+        map.loadChunksByPosition(socket.entity.body.body.position.x, socket.entity.body.body.position.y)
+            .then(() => {
+                socket.emit('start', {
+                    id: socket.entity.ENTITY_ID,
+                    position: {
+                        x: socket.entity.body.body.position.x,
+                        y: socket.entity.body.body.position.y
+                    }
+                })
+            })
 
         console.log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID)
     })
@@ -128,20 +133,15 @@ io.on('connection', socket => {
     })
 })
 
-// preload map data
-map.loadChunksByPosition()
-    .then(() => {
-        // broadcast positions
-        setInterval(() => {
-            io.sockets.emit('update', {
-                player: playerData(),
-                chunks: map.getDirtyChunkData()
-            })
-        }, 100)
-
-        game.start()
-
-        // start listening
-        server.listen(PORT)
-        console.log('Server is now listening on port ' + PORT)
+setInterval(() => {
+    io.sockets.emit('update', {
+        player: playerData(),
+        chunks: map.getDirtyChunkData()
     })
+}, 100)
+
+game.start()
+
+// start listening
+server.listen(PORT)
+console.log('Server is now listening on port ' + PORT)
