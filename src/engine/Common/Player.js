@@ -43,6 +43,10 @@ export default class Player extends Entity {
     }
 
     update (updateData) {
+        if (this.controller) {
+            this.controller.update(updateData)
+        }
+
         super.update(updateData)
 
         this.isRunning = false

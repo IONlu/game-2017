@@ -8,6 +8,7 @@ import GameEngine from './engine/Common/GameEngine'
 import Loop from './engine/Server/Loop'
 import MapEntity from './engine/Server/Map'
 import PlayerEntity from './engine/Common/Player'
+import Controller from './engine/Common/Controller'
 import { height as getTerrainHeight } from './engine/Common/Terrain'
 
 const PORT = 4200
@@ -46,52 +47,82 @@ app.get('/chunk/:x/:y', (req, res, next) => {
         })
 })
 
-const createPlayer = () => {
-    let startX = (Math.random() - 0.5) * 10000
+let players = []
+const createPlayer = (name) => {
+    let startX = (Math.random() - 0.5) * 100
     let startY = (-getTerrainHeight(startX / 8) * 8) - 14
 
-    return game.createEntity('Player', {
+    let player = game.createEntity('Player', {
         position: {
             x: startX,
             y: startY
         }
     })
+    player.PLAYER_NAME = name.slice(0, 10)
+    player.setController(new Controller())
+
+    players.push(player)
+
+    return player
 }
 
 const destroyEntity = entity => {
+    let index = players.indexOf(entity)
+    if (index > -1) {
+        players.splice(index, 1)
+    }
+
     game.destroyEntity(entity)
 }
 
-let playerData = {}
+const playerData = () => {
+    let data = {}
+    players.forEach(entity => {
+        data[entity.ENTITY_ID] = {
+            name: entity.PLAYER_NAME,
+            data: [
+                entity.body.body.position.x,
+                entity.body.body.position.y,
+                entity.body.body.angle
+            ]
+        }
+    })
+    return data
+}
 
 // handle socket io connections
 io.on('connection', socket => {
     socket.on('disconnect', () => {
         if (socket.entity) {
-            if (playerData.hasOwnProperty(socket.entity.ENTITY_ID)) {
-                console.log(playerData[socket.entity.ENTITY_ID].name + ' has left the game. ID: ' + socket.entity.ENTITY_ID)
-                delete playerData[socket.entity.ENTITY_ID]
-            }
             destroyEntity(socket.entity)
         }
     })
 
-    socket.on('update', data => {
-        if (socket.entity && playerData.hasOwnProperty(socket.entity.ENTITY_ID)) {
-            playerData[socket.entity.ENTITY_ID].data = data
+    socket.on('controller.start', data => {
+        if (socket.entity) {
+            console.log(socket.entity.PLAYER_NAME, 'start', data)
+            socket.entity.controller.start(data)
+        }
+    })
+
+    socket.on('controller.stop', data => {
+        if (socket.entity) {
+            socket.entity.controller.stop(data)
         }
     })
 
     socket.on('start', name => {
-        name = name.slice(0, 10)
-        socket.entity = createPlayer()
-        playerData[socket.entity.ENTITY_ID] = {
-            name, data: undefined
-        }
+        socket.entity = createPlayer(name)
+
         socket.emit('start', {
-            id: socket.entity.ENTITY_ID
+            id: socket.entity.ENTITY_ID,
+            position: {
+                x: socket.entity.body.body.position.x,
+                y: socket.entity.body.body.position.y
+            }
         })
-        console.log(name + ' has joined the game. ID: ' + socket.entity.ENTITY_ID)
+
+        console.log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID)
     })
 
     socket.on('setTiles', data => {
@@ -108,10 +139,12 @@ map.loadChunksByPosition()
         // broadcast positions
         setInterval(() => {
             io.sockets.emit('update', {
-                player: playerData,
+                player: playerData(),
                 chunks: map.getDirtyChunkData()
             })
         }, 100)
+
+        game.start()
 
         // start listening
         server.listen(PORT)

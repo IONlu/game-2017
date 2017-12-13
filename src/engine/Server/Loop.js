@@ -12,7 +12,7 @@ export default class Loop extends EventEmitter {
 
     start () {
         this.isRunning = true
-        this.lastFrameTime = performance.now()
+        this.lastFrameTime = Date.now()
         this._nextFrame()
     }
 
@@ -25,7 +25,7 @@ export default class Loop extends EventEmitter {
     _nextFrame () {
         this._cancelNext()
 
-        let now = performance.now()
+        let now = Date.now()
         let delay = Math.max(0, this.lastFrameTime + this.delta - now)
 
         this.handle = setTimeout(() => {

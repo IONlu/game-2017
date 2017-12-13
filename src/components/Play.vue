@@ -98,20 +98,19 @@
     import PlayerEntity from '../engine/Client/Player'
     import BallEntity from '../engine/Client/Ball'
     import ToolTrait from '../engine/Client/Tool'
-    import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
+    // import NetworkSendTrait from '../engine/Common/Trait/Network/Send'
     import UpdateCameraTrait from '../engine/Client/Trait/UpdateCamera'
     import ChunkLoaderTrait from '../engine/Client/Trait/ChunkLoader'
     import AttachTextTrait from '../engine/Client/Trait/AttachText'
     import PositionDialogTrait from '../engine/Client/Trait/PositionDialog'
     import Keyboard from '../engine/Client/Keyboard'
+    import Controller from '../engine/Common/Controller'
 
-    import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
+    // import PhysicsBodyBall from '../engine/Common/PhysicsBodyBall'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
     import BallImage from '../assets/texture/ball.png'
-
-    import { height as getTerrainHeight } from '../engine/Common/Terrain'
 
     import io from 'socket.io-client'
 
@@ -150,39 +149,40 @@
             this.$game.add('player', PlayerImage)
             this.$game.add('ball', BallImage)
 
+            this.$controller = new Controller()
+
             this.$keyboard = new Keyboard(document.body)
-            this.$keyboard.bind(this.$game.controller, {
+            this.$keyboard.bind(this.$controller, {
                 left: [ 37, 65 ],
                 right: [ 39, 68 ],
                 jump: [ 87, 38, 32 ]
+            })
+
+            this.$controller.on('start', name => {
+                this.$socket.emit('controller.start', name)
+            })
+            this.$controller.on('stop', name => {
+                this.$socket.emit('controller.stop', name)
             })
 
             this.$game.load()
                 .then(() => {
                     this.$map = this.$game.createEntity('Map')
 
-                    // start position
-                    let startX = (Math.random() - 0.5) * 10000
-                    let startY = (-getTerrainHeight(startX / 8) * 8) - 14
-                    this.$game.camera.position.set(startX, startY)
-
-                    for (let i = 0; i < 10; i++) {
+                    /* for (let i = 0; i < 10; i++) {
                         let ball = this.$game.createEntity('Ball')
                         let x = ((Math.random() - 0.5) * 1000) + startX
                         let y = (-getTerrainHeight(x / 8) * 8) - 14
                         ball.addTrait(new PhysicsBodyBall(this.$game, this.$game.physics, x, y))
-                    }
+                    } */
 
                     // start playing
-                    this.$socket.on('start', ({ id }) => {
+                    this.$socket.on('start', ({ id, position }) => {
                         this.$player = this.$game.createEntity('Player', {
-                            position: {
-                                x: startX,
-                                y: startY
-                            }
+                            position
                         })
 
-                        this.$player.addTrait(new NetworkSendTrait(this.$socket))
+                        // this.$player.addTrait(new NetworkSendTrait(this.$socket))
                         this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
                         this.$player.addTrait(new PositionDialogTrait(this.$game))
@@ -192,7 +192,7 @@
 
                         this.$player.SERVER_ENTITY_ID = id
 
-                        this.$player.setController(this.$game.controller)
+                        this.$player.setController(this.$controller)
 
                         this.isPlaying = true
                     })
@@ -235,7 +235,7 @@
                     })
 
                     // preload chunks
-                    return this.$map.loadChunksByPosition(startX, startY)
+                    return this.$map.loadChunksByPosition()
                 })
                 .then(() => {
                     this.isLoading = false

@@ -1,6 +1,5 @@
 import PhysicsEngine from './PhysicsEngine'
 import Factory from './Factory'
-import Controller from './Controller'
 
 var nextEntityID = 1
 
@@ -8,7 +7,6 @@ export default class GameEngine {
     constructor (loop) {
         this.loop = loop
         this.physics = new PhysicsEngine()
-        this.controller = new Controller()
         this.entities = []
 
         this.states = []
@@ -45,8 +43,6 @@ export default class GameEngine {
     }
 
     update () {
-        this.controller.update()
-
         this.updateStep++
         var updateData = {
             step: this.updateStep
