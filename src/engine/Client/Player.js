@@ -2,8 +2,8 @@ import CommonPlayer from '../Common/Player'
 import { Sprite, Texture, Rectangle } from 'pixi.js'
 
 export default class Player extends CommonPlayer {
-    constructor (app) {
-        super(app)
+    constructor (app, options = {}) {
+        super(app, options)
 
         this.animations = {
             default: [ 3 ],
