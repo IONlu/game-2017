@@ -22,4 +22,9 @@ export default class Ball extends CommonBall {
         )
         this.sprite.rotation = this.old.rotation + (t * (this.rotation - this.old.rotation))
     }
+
+    destroy () {
+        super.destroy()
+        this.app.stage.removeChild(this.sprite)
+    }
 }

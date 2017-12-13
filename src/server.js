@@ -76,7 +76,7 @@ const destroyPlayer = entity => {
         players.splice(index, 1)
     }
 
-    game.destroyPlayer(entity)
+    game.destroyEntity(entity)
 }
 
 const playerData = () => {
@@ -95,6 +95,9 @@ const createBall = (x) => {
     let startX = x
     let startY = (-getTerrainHeight(startX / 8) * 8) - 100
 
+    if (balls.length >= 100) {
+        destroyBall(balls[0])
+    }
     let ball = game.createEntity('Ball', {
         position: {
             x: startX,
@@ -107,14 +110,14 @@ const createBall = (x) => {
     return ball
 }
 
-/* const destroyBall = entity => {
+const destroyBall = entity => {
     let index = balls.indexOf(entity)
     if (index > -1) {
         balls.splice(index, 1)
     }
 
-    game.destroyPlayer(entity)
-} */
+    game.destroyEntity(entity)
+}
 
 const ballsData = () => {
     let data = {}

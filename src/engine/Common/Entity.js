@@ -30,6 +30,8 @@ export default class Entity {
         this.position = new Vector(0, 0)
         this.rotation = 0
         this.traits = []
+
+        this.destroyed = false
     }
 
     addTrait (trait, name) {
@@ -47,6 +49,9 @@ export default class Entity {
     }
 
     handleUpdate (updateData) {
+        if (this.destroyed) {
+            return
+        }
         this.update(updateData)
         this.traits.forEach(trait => {
             trait.update(this, updateData)
@@ -56,6 +61,9 @@ export default class Entity {
     render (t) {}
 
     handleRender (dtime, time) {
+        if (this.destroyed) {
+            return
+        }
         this.render(dtime, time)
         this.traits.forEach(trait => {
             trait.render(this, dtime, time)
@@ -63,6 +71,8 @@ export default class Entity {
     }
 
     destroy () {
+        this.destroyed = true
+
         delete entities[this.ENTITY_ID]
         while (this.traits.length) {
             let trait = this.traits.pop()
