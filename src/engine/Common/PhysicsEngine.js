@@ -20,8 +20,6 @@ export default class PhysicsEngine {
 
     update () {
         Engine.update(this.engine, 1000 / 60)
-        Engine.update(this.engine, 1000 / 60)
-        Engine.update(this.engine, 1000 / 60)
     }
 
     _handleCollisions (ev) {

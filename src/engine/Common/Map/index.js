@@ -109,7 +109,10 @@ export default class Map extends Entity {
                     screenX + (start * 8) + (4 * (CHUNK_SIZE - start)),
                     screenY + (j * 8) + 4,
                     8 * (CHUNK_SIZE - start),
-                    8
+                    8,
+                    {
+                        friction: 1
+                    }
                 )
                 bodies.push(body)
             }

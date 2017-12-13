@@ -29,7 +29,8 @@ export default class Player extends Entity {
                     inertia: Infinity,
                     sleepThreshold: Infinity,
                     mass: 2,
-                    friction: 0.002
+                    friction: 0,
+                    restitution: 0.1
                 })
             ),
             'body'
@@ -48,20 +49,46 @@ export default class Player extends Entity {
         this.isJumping = false
 
         if (this.controller) {
-            if (this.controller.is('left') && !this.body.isColliding(BodyTrait.COLLISION_DIRECTION_LEFT)) {
+            if (
+                this.controller.is('left') &&
+                !this.body.isColliding(BodyTrait.COLLISION_DIRECTION_LEFT)
+            ) {
                 this.isRunning = true
                 MatterBody.setVelocity(this.body.body, {
-                    x: Math.max(-4, this.body.body.velocity.x - 1),
+                    x: Math.max(-3, this.body.body.velocity.x - 0.5),
                     y: this.body.body.velocity.y
                 })
             }
-            if (this.controller.is('right') && !this.body.isColliding(BodyTrait.COLLISION_DIRECTION_RIGHT)) {
+
+            if (
+                this.controller.is('right') &&
+                !this.body.isColliding(BodyTrait.COLLISION_DIRECTION_RIGHT)
+            ) {
                 this.isRunning = true
                 MatterBody.setVelocity(this.body.body, {
-                    x: Math.min(4, this.body.body.velocity.x + 1),
+                    x: Math.min(3, this.body.body.velocity.x + 0.5),
                     y: this.body.body.velocity.y
                 })
             }
+
+            if (
+                !this.controller.is('right') &&
+                !this.controller.is('left') &&
+                this.body.isColliding(BodyTrait.COLLISION_DIRECTION_BOTTOM)
+            ) {
+                if (this.body.body.velocity.x >= 0) {
+                    MatterBody.setVelocity(this.body.body, {
+                        x: Math.max(0, this.body.body.velocity.x - 0.5),
+                        y: this.body.body.velocity.y
+                    })
+                } else {
+                    MatterBody.setVelocity(this.body.body, {
+                        x: Math.min(0, this.body.body.velocity.x + 0.5),
+                        y: this.body.body.velocity.y
+                    })
+                }
+            }
+
             if ((this.controller.is('jump'))) {
                 if (this.body.isColliding(BodyTrait.COLLISION_DIRECTION_BOTTOM)) {
                     MatterBody.setVelocity(this.body.body, {

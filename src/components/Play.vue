@@ -143,7 +143,7 @@
             Factory.add('Player', PlayerEntity)
             Factory.add('Ball', BallEntity)
 
-            this.$game = new GameEngine(new Loop(20), this.$refs.renderer)
+            this.$game = new GameEngine(new Loop(60), this.$refs.renderer)
             this.$game.camera.scale.set(2)
 
             this.$game.add('block', BlockImage)

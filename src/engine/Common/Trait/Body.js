@@ -65,15 +65,21 @@ const BodyTrait = class Body extends Trait {
         })
 
         collisions.forEach(({ collision }) => {
-            if (Math.abs(collision.tangent.x) > 0) {
-                this.colliding |= collision.penetration.y < 0
-                    ? BodyTrait.COLLISION_DIRECTION_BOTTOM
-                    : BodyTrait.COLLISION_DIRECTION_TOP
-            }
-            if (Math.abs(collision.tangent.y) > 0) {
+            if (
+                Math.abs(collision.tangent.y) > Math.abs(collision.tangent.x) &&
+                Math.abs(collision.penetration.x) > Math.abs(collision.penetration.y)
+            ) {
                 this.colliding |= collision.penetration.x < 0
                     ? BodyTrait.COLLISION_DIRECTION_RIGHT
                     : BodyTrait.COLLISION_DIRECTION_LEFT
+            }
+            if (
+                Math.abs(collision.tangent.x) > Math.abs(collision.tangent.y) &&
+                Math.abs(collision.penetration.y) > Math.abs(collision.penetration.x)
+            ) {
+                this.colliding |= collision.penetration.y < 0
+                    ? BodyTrait.COLLISION_DIRECTION_BOTTOM
+                    : BodyTrait.COLLISION_DIRECTION_TOP
             }
         })
 

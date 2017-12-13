@@ -20,7 +20,7 @@ global.HTMLElement = class DummyHTMLElement {}
 
 Factory.add('Map', MapEntity)
 
-const game = new GameEngine(new Loop(20))
+const game = new GameEngine(new Loop(60))
 const map = game.createEntity('Map')
 
 app.use(cors())
