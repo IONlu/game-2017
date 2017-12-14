@@ -16,8 +16,8 @@ export default class Player extends Entity {
             new BodyTrait(
                 app.physics.engine,
                 MatterBodies.circle(this.position.x, this.position.y, 8, {
-                    restitution: 0.4,
-                    mass: 0.1
+                    restitution: 0.5,
+                    mass: 0.05
                 })
             ),
             'body'
