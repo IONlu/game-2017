@@ -31,6 +31,11 @@ export default class Entity {
         this.rotation = 0
         this.traits = []
 
+        this.old = {
+            position: this.position.clone(),
+            rotation: this.rotation
+        }
+
         this.destroyed = false
     }
 
