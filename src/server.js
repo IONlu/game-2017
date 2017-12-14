@@ -188,7 +188,7 @@ setInterval(() => {
         balls: ballsData(),
         chunks: map.getDirtyChunkData()
     })
-}, 100)
+}, 50)
 
 game.start()
 

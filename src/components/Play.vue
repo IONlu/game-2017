@@ -204,7 +204,7 @@
                         Object.keys(data.player).forEach(key => {
                             let SERVER_ENTITY_ID = parseInt(key, 10)
                             if (this.$player && SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID) {
-                                this.$player.body.importState(data.player[key].data, 0.5)
+                                this.$player.body.importState(data.player[key].data, 0.25)
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
