@@ -8,7 +8,9 @@ var stateProps = [
 
 export default class PhysicsEngine {
     constructor () {
-        this.engine = Engine.create()
+        this.engine = Engine.create({
+            enableSleeping: true
+        })
         this.world = this.engine.world
 
         Events.on(this.engine, 'collisionStart', this._handleCollisions.bind(this))
