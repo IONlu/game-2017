@@ -12,6 +12,8 @@ import BallEntity from './engine/Common/Ball'
 import Controller from './engine/Common/Controller'
 import { height as getTerrainHeight } from './engine/Common/Terrain'
 import ChunkLoaderTrait from './engine/Server/Trait/ChunkLoader'
+import { decomp } from 'poly-decomp'
+console.log(decomp)
 
 const PORT = 4200
 const app = express()
@@ -52,7 +54,7 @@ app.get('/chunk/:x/:y', (req, res, next) => {
 
 let players = []
 const createPlayer = (name) => {
-    let startX = (Math.random() - 0.5) * 100
+    let startX = (Math.random() - 0.5) * 10000
     let startY = (-getTerrainHeight(startX / 8) * 8) - 14
 
     let player = game.createEntity('Player', {

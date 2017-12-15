@@ -1,7 +1,8 @@
 import Entity from '../Entity'
 import { CHUNK_SIZE } from '../../../config'
-import { Bodies, World, Body } from 'matter-js'
+import { Bodies, World } from 'matter-js'
 import Chunk from './Chunk'
+import { polygon as PolygonTools } from 'polygon-tools'
 
 export default class Map extends Entity {
     constructor (app) {
@@ -79,52 +80,73 @@ export default class Map extends Entity {
         let bodies = []
         let screenX = x * 8 * CHUNK_SIZE
         let screenY = y * 8 * CHUNK_SIZE
-        let body = Bodies.rectangle(screenX + ((CHUNK_SIZE / 2) * 8), screenY + ((CHUNK_SIZE / 2) * 8), CHUNK_SIZE * 8, CHUNK_SIZE * 8, {
-            isSensor: true
-        })
-        bodies.push(body)
+
+        let rectangles = []
 
         for (let j = 0; j < CHUNK_SIZE; j++) {
             let start = -1
             for (let i = 0; i < CHUNK_SIZE; i++) {
                 if (start === -1) {
-                    if (this.chunks[x + ';' + y].chunk.get(i, j)) {
+                    if (!this.chunks[x + ';' + y].chunk.get(i, j)) {
                         start = i
                     }
                 } else {
-                    if (!this.chunks[x + ';' + y].chunk.get(i, j)) {
-                        let body = Bodies.rectangle(
-                            screenX + (start * 8) + (4 * (i - start)),
-                            screenY + (j * 8) + 4,
-                            8 * (i - start),
-                            8
-                        )
-                        bodies.push(body)
+                    if (this.chunks[x + ';' + y].chunk.get(i, j)) {
+                        rectangles.push([
+                            [ screenX + (start * 8), screenY + (j * 8) ],
+                            [ screenX + (start * 8) + 8 * (i - start), screenY + (j * 8) ],
+                            [ screenX + (start * 8) + 8 * (i - start), screenY + (j * 8) + 8 ],
+                            [ screenX + (start * 8), screenY + (j * 8) + 8 ]
+                        ])
                         start = -1
                     }
                 }
             }
             if (start !== -1) {
-                let body = Bodies.rectangle(
-                    screenX + (start * 8) + (4 * (CHUNK_SIZE - start)),
-                    screenY + (j * 8) + 4,
-                    8 * (CHUNK_SIZE - start),
-                    8,
+                rectangles.push([
+                    [ screenX + (start * 8), screenY + (j * 8) ],
+                    [ screenX + (start * 8) + 8 * (CHUNK_SIZE - start), screenY + (j * 8) ],
+                    [ screenX + (start * 8) + 8 * (CHUNK_SIZE - start), screenY + (j * 8) + 8 ],
+                    [ screenX + (start * 8), screenY + (j * 8) + 8 ]
+                ])
+            }
+        }
+
+        if (rectangles.length) {
+            let triangles = PolygonTools.triangulate([
+                [ screenX, screenY ],
+                [ screenX + (CHUNK_SIZE * 8), screenY ],
+                [ screenX + (CHUNK_SIZE * 8), screenY + (CHUNK_SIZE * 8) ],
+                [ screenX, screenY + (CHUNK_SIZE * 8) ]
+            ], rectangles)
+            triangles.forEach(triangle => {
+                let body = Bodies.fromVertices(
+                    ...PolygonTools.centroid(triangle),
+                    triangle.map(vec => {
+                        return {
+                            x: vec[0],
+                            y: vec[1]
+                        }
+                    }),
                     {
+                        isStatic: true,
                         friction: 1
                     }
                 )
                 bodies.push(body)
-            }
+            })
         }
+
         if (this.chunks[x + ';' + y].bodyGroup) {
-            World.remove(this.app.physics.world, this.chunks[x + ';' + y].bodyGroup)
+            this.chunks[x + ';' + y].bodyGroup.forEach(body => {
+                World.remove(this.app.physics.world, body)
+            })
         }
-        let bodyGroup = this.chunks[x + ';' + y].bodyGroup = Body.create({
-            parts: bodies,
-            isStatic: true
+
+        this.chunks[x + ';' + y].bodyGroup = bodies
+        bodies.forEach(body => {
+            World.add(this.app.physics.world, body)
         })
-        World.add(this.app.physics.world, bodyGroup)
     }
 
     createChunkIfNone (x, y) {
