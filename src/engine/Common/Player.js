@@ -77,8 +77,7 @@ export default class Player extends Entity {
 
             if (
                 !this.controller.is('right') &&
-                !this.controller.is('left') &&
-                this.body.isColliding(BodyTrait.COLLISION_DIRECTION_BOTTOM)
+                !this.controller.is('left')
             ) {
                 if (this.body.body.velocity.x >= 0) {
                     MatterBody.setVelocity(this.body.body, {
