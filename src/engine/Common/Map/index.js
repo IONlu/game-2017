@@ -76,75 +76,38 @@ export default class Map extends Entity {
         })
     }
 
-    updatePhysicsBody (x, y) {
-        let bodies = []
-        let screenX = x * 8 * CHUNK_SIZE
-        let screenY = y * 8 * CHUNK_SIZE
+    updatePhysicsBody (chunkX, chunkY) {
+        let chunkKey = chunkX + ';' + chunkY
+        let offset = {
+            x: chunkX * 8 * CHUNK_SIZE,
+            y: chunkY * 8 * CHUNK_SIZE
+        }
 
-        let rectangles = []
-
-        for (let j = 0; j < CHUNK_SIZE; j++) {
-            let start = -1
-            for (let i = 0; i < CHUNK_SIZE; i++) {
-                if (start === -1) {
-                    if (!this.chunks[x + ';' + y].chunk.get(i, j)) {
-                        start = i
+        let triangles = this.chunks[chunkKey].chunk.getTriangles(offset, 8)
+        let bodies = triangles.map(triangle => {
+            return Bodies.fromVertices(
+                ...PolygonTools.centroid(triangle),
+                triangle.map(vec => {
+                    return {
+                        x: vec[0],
+                        y: vec[1]
                     }
-                } else {
-                    if (this.chunks[x + ';' + y].chunk.get(i, j)) {
-                        rectangles.push([
-                            [ screenX + (start * 8), screenY + (j * 8) ],
-                            [ screenX + (start * 8) + 8 * (i - start), screenY + (j * 8) ],
-                            [ screenX + (start * 8) + 8 * (i - start), screenY + (j * 8) + 8 ],
-                            [ screenX + (start * 8), screenY + (j * 8) + 8 ]
-                        ])
-                        start = -1
-                    }
+                }),
+                {
+                    isStatic: true,
+                    friction: 1
                 }
-            }
-            if (start !== -1) {
-                rectangles.push([
-                    [ screenX + (start * 8), screenY + (j * 8) ],
-                    [ screenX + (start * 8) + 8 * (CHUNK_SIZE - start), screenY + (j * 8) ],
-                    [ screenX + (start * 8) + 8 * (CHUNK_SIZE - start), screenY + (j * 8) + 8 ],
-                    [ screenX + (start * 8), screenY + (j * 8) + 8 ]
-                ])
-            }
-        }
+            )
+        })
 
-        if (rectangles.length) {
-            let triangles = PolygonTools.triangulate([
-                [ screenX, screenY ],
-                [ screenX + (CHUNK_SIZE * 8), screenY ],
-                [ screenX + (CHUNK_SIZE * 8), screenY + (CHUNK_SIZE * 8) ],
-                [ screenX, screenY + (CHUNK_SIZE * 8) ]
-            ], rectangles)
-            triangles.forEach(triangle => {
-                let body = Bodies.fromVertices(
-                    ...PolygonTools.centroid(triangle),
-                    triangle.map(vec => {
-                        return {
-                            x: vec[0],
-                            y: vec[1]
-                        }
-                    }),
-                    {
-                        isStatic: true,
-                        friction: 1
-                    }
-                )
-                bodies.push(body)
-            })
-        }
-
-        if (this.chunks[x + ';' + y].bodyGroup) {
-            this.chunks[x + ';' + y].bodyGroup.forEach(body => {
+        if (this.chunks[chunkKey].bodies) {
+            this.chunks[chunkKey].bodies.forEach(body => {
                 World.remove(this.app.physics.world, body)
             })
         }
 
-        this.chunks[x + ';' + y].bodyGroup = bodies
-        bodies.forEach(body => {
+        this.chunks[chunkKey].bodies = bodies
+        this.chunks[chunkKey].bodies.forEach(body => {
             World.add(this.app.physics.world, body)
         })
     }
