@@ -12,8 +12,6 @@ import BallEntity from './engine/Common/Ball'
 import Controller from './engine/Common/Controller'
 import { height as getTerrainHeight } from './engine/Common/Terrain'
 import ChunkLoaderTrait from './engine/Server/Trait/ChunkLoader'
-import { decomp } from 'poly-decomp'
-console.log(decomp)
 
 const PORT = 4200
 const app = express()

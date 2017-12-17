@@ -73,6 +73,23 @@ export default class Map extends CommonMap {
 
         // update physics
         this.updatePhysicsBody(x, y)
+
+        /* let graphics = this.chunks[key].graphics
+        if (!graphics) {
+            graphics = this.chunks[key].graphics = new Graphics()
+            this.mapContainer.addChild(graphics)
+        }
+        graphics.clear()
+        this.chunks[key].bodies.forEach(body => {
+            if (body.vertices.length > 0) {
+                graphics.beginFill(Math.random() * 0xFFFFFF << 0, 0.5)
+                graphics.moveTo(body.vertices[0].x, body.vertices[0].y)
+                for (let i = 1; i < body.vertices.length; i++) {
+                    graphics.lineTo(body.vertices[i].x, body.vertices[i].y)
+                }
+                graphics.moveTo(body.vertices[0].x, body.vertices[0].y)
+            }
+        }) */
     }
 
     darkness (tileX, tileY) {

@@ -2,7 +2,6 @@ import Entity from '../Entity'
 import { CHUNK_SIZE } from '../../../config'
 import { Bodies, World } from 'matter-js'
 import Chunk from './Chunk'
-import { polygon as PolygonTools } from 'polygon-tools'
 
 export default class Map extends Entity {
     constructor (app) {
@@ -83,16 +82,15 @@ export default class Map extends Entity {
             y: chunkY * 8 * CHUNK_SIZE
         }
 
-        let triangles = this.chunks[chunkKey].chunk.getTriangles(offset, 8)
-        let bodies = triangles.map(triangle => {
-            return Bodies.fromVertices(
-                ...PolygonTools.centroid(triangle),
-                triangle.map(vec => {
-                    return {
-                        x: vec[0],
-                        y: vec[1]
-                    }
-                }),
+        let rectangles = this.chunks[chunkKey].chunk.getRectangles()
+        let bodies = rectangles.map(rectangle => {
+            let width = (rectangle[2] - rectangle[0]) * 8
+            let height = (rectangle[3] - rectangle[1]) * 8
+            return Bodies.rectangle(
+                (rectangle[0] * 8) + (width / 2) + offset.x,
+                (rectangle[1] * 8) + (height / 2) + offset.y,
+                width,
+                height,
                 {
                     isStatic: true,
                     friction: 1
@@ -106,7 +104,7 @@ export default class Map extends Entity {
             })
         }
 
-        this.chunks[chunkKey].bodies = bodies
+        this.chunks[chunkKey].bodies = bodies.filter(body => body)
         this.chunks[chunkKey].bodies.forEach(body => {
             World.add(this.app.physics.world, body)
         })

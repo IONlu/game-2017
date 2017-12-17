@@ -1,6 +1,5 @@
 import { CHUNK_SIZE } from '../../../config'
 import { tile as getTileType } from '../Terrain.js'
-import { polygon as PolygonTools } from 'polygon-tools'
 
 export default class Chunk {
     constructor (size, isDummy = false) {
@@ -45,57 +44,53 @@ export default class Chunk {
         return this.tiles[this._getIndexFromPosition(x, y, background)]
     }
 
-    getRectangles (offset, tileSize, inverted = false) {
-        let rectangles = []
-        for (let y = 0; y < this.size; y++) {
-            let fromX = -1
-            let y1 = (y * tileSize) + offset.y
-            let y2 = y1 + tileSize
-
-            for (let x = 0; x <= this.size; x++) {
-                let hasTile = (
-                    x < this.size &&
-                    (
-                        inverted
-                            ? !this.get(x, y)
-                            : this.get(x, y)
-                    )
-                )
-
-                if (fromX === -1) {
-                    if (hasTile) {
-                        fromX = x
-                    }
-                    continue
-                }
-
-                if (!hasTile) {
-                    let x1 = (fromX * tileSize) + offset.x
-                    let x2 = x1 + ((x - fromX) * tileSize)
-                    rectangles.push([
-                        [ x1, y1 ],
-                        [ x2, y1 ],
-                        [ x2, y2 ],
-                        [ x1, y2 ]
-                    ])
-                    fromX = -1
-                }
-            }
-        }
-        return rectangles
+    getRectangles () {
+        return this.getSubRectangles([ 0, 0, this.size, this.size ]).rectangles
     }
 
-    getTriangles (offset, tileSize) {
-        let x1 = offset.x
-        let x2 = x1 + (this.size * tileSize)
-        let y1 = offset.y
-        let y2 = y1 + (this.size * tileSize)
-        return PolygonTools.triangulate([
-            [ x1, y1 ],
-            [ x2, y1 ],
-            [ x2, y2 ],
-            [ x1, y2 ]
-        ], this.getRectangles(offset, tileSize, true))
+    getSubRectangles ([ x1, y1, x2, y2 ]) {
+        let width = x2 - x1
+        let height = y2 - y1
+
+        if (height === 1 && width === 1) {
+            let isFull = !!this.get(x1, y1)
+
+            if (!isFull) {
+                return {
+                    isFull,
+                    rectangles: []
+                }
+            }
+
+            return {
+                isFull,
+                rectangles: [[ x1, y1, x2, y2 ]]
+            }
+        }
+
+        let a, b
+        if (width > height) {
+            a = this.getSubRectangles([ x1, y1, x1 + (width / 2), y2 ])
+            b = this.getSubRectangles([ x1 + (width / 2), y1, x2, y2 ])
+        } else {
+            a = this.getSubRectangles([ x1, y1, x2, y1 + (height / 2) ])
+            b = this.getSubRectangles([ x1, y1 + (height / 2), x2, y2 ])
+        }
+
+        if (a.isFull === true && b.isFull === true) {
+            return {
+                isFull: true,
+                rectangles: [[ x1, y1, x2, y2 ]]
+            }
+        }
+
+        return {
+            isFull: false,
+            rectangles: [
+                ...a.rectangles,
+                ...b.rectangles
+            ]
+        }
     }
 }
 
