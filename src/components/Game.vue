@@ -74,7 +74,8 @@
         data () {
             return {
                 isLoading: true,
-                isPlaying: false
+                isPlaying: false,
+                isConnected: false
             }
         },
 
@@ -93,6 +94,10 @@
 
             isPlaying (playing) {
                 this.$emit('update:playing', playing)
+            },
+
+            isConnected (connected) {
+                this.$emit('update:connected', connected)
             }
         },
 
@@ -101,6 +106,21 @@
                 process.env.SERVER_BASE_URL ||
                 ('//' + location.hostname + (location.port ? ':' + location.port : ''))
             )
+
+            this.$socket.on('connect', () => {
+                this.isConnected = true
+            })
+
+            this.$socket.on('disconnect', () => {
+                this.isConnected = false
+
+                if (this.$player) {
+                    this.$game.destroyEntity(this.$player)
+                    this.$player = null
+                }
+
+                this.isPlaying = false
+            })
 
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
@@ -228,6 +248,7 @@
         },
 
         beforeDestroy () {
+            this.$game.stop()
             this.$socket.close()
         }
     }

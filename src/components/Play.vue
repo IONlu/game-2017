@@ -2,7 +2,7 @@
     <div class="component-play">
         <div
             class="dialog-container"
-            v-if="!isLoading && !isPlaying">
+            v-if="isConnected && !isLoading && !isPlaying">
             <div class="name-dialog">
                 <label>
                     Enter your name
@@ -21,6 +21,7 @@
             ref="game"
             @update:loading="onUpdateLoading"
             @update:playing="onUpdatePlaying"
+            @update:connected="onUpdateConnected"
         ></game>
     </div>
 </template>
@@ -84,7 +85,8 @@
         data () {
             return {
                 isLoading: true,
-                isPlaying: false
+                isPlaying: false,
+                isConnected: false
             }
         },
 
@@ -110,6 +112,10 @@
 
             onUpdatePlaying (playing) {
                 this.isPlaying = playing
+            },
+
+            onUpdateConnected (connected) {
+                this.isConnected = connected
             }
         }
     }
