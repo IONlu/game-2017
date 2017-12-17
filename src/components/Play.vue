@@ -227,7 +227,9 @@
                         })
 
                         data.chunks.forEach(chunk => {
-                            this.$map._handleChunkData(chunk.x, chunk.y, chunk.data)
+                            if (this.$map.hasChunk(chunk.x, chunk.y)) {
+                                this.$map._handleChunkData(chunk.x, chunk.y, chunk.data)
+                            }
                         })
 
                         Object.keys(balls).forEach(key => {
