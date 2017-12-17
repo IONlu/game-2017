@@ -186,7 +186,7 @@ setInterval(() => {
     io.sockets.emit('update', {
         player: playerData(),
         balls: ballsData(),
-        chunks: map.getDirtyChunkData()
+        chunks: map.resetDirtyChunkData()
     })
 }, 50)
 

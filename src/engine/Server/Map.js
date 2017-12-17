@@ -7,6 +7,7 @@ export default class Map extends CommonMap {
         super(app)
 
         this._loadingChunks = {}
+        this._dirtyChunkData = {}
     }
 
     async loadChunk (x, y) {
@@ -53,42 +54,50 @@ export default class Map extends CommonMap {
         return Promise.all(chunksPromise)
     }
 
-    getDirtyChunkData () {
-        return Object.keys(this.chunks)
-            .filter(key => {
-                if (this.chunks[key].chunk.isDummy) {
-                    return false
-                }
-                let isDirty = this.chunks[key].chunk.isDirty
-                this.chunks[key].chunk.isDirty = false
-                return isDirty
-            })
-            .map(key => {
-                return {
-                    version: 1,
-                    x: this.chunks[key].x,
-                    y: this.chunks[key].y,
-                    data: this.chunks[key].chunk.tiles
+    update (updateData) {
+        super.update(updateData)
+        this.updateDirtyChunkData()
+        this.updateDirtyPhysicsBodies()
+        this.resetDirtyTags()
+    }
+
+    updateDirtyChunkData () {
+        Object.keys(this.chunks)
+            .forEach(key => {
+                let chunk = this.chunks[key].chunk
+                if (!chunk.isDummy && chunk.isDirty) {
+                    this._dirtyChunkData[key] = {
+                        x: this.chunks[key].x,
+                        y: this.chunks[key].y,
+                        data: this.chunks[key].chunk.tiles
+                    }
                 }
             })
     }
 
-    setTiles (tiles, type = null) {
-        super.setTiles(tiles, type)
+    resetDirtyChunkData () {
+        let chunkData = this._dirtyChunkData
+        this._dirtyChunkData = {}
+        return Object.keys(chunkData).map(key => chunkData[key])
+    }
 
-        let chunks = {}
-        tiles.forEach(tile => {
-            let chunkX = Math.floor(tile.x / CHUNK_SIZE)
-            let chunkY = Math.floor(tile.y / CHUNK_SIZE)
-            if (!chunks.hasOwnProperty(chunkX + ';' + chunkY)) {
-                chunks[chunkX + ';' + chunkY] = {
-                    x: chunkX,
-                    y: chunkY
+    updateDirtyPhysicsBodies () {
+        Object.keys(this.chunks)
+            .forEach(key => {
+                let chunk = this.chunks[key].chunk
+                if (!chunk.isDummy && chunk.isDirty) {
+                    this.updatePhysicsBody(this.chunks[key].x, this.chunks[key].y)
                 }
-            }
-        })
-        for (let key in chunks) {
-            this.updatePhysicsBody(chunks[key].x, chunks[key].y)
-        }
+            })
+    }
+
+    resetDirtyTags () {
+        Object.keys(this.chunks)
+            .forEach(key => {
+                let chunk = this.chunks[key].chunk
+                if (!chunk.isDummy && chunk.isDirty) {
+                    chunk.isDirty = false
+                }
+            })
     }
 }
