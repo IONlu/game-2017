@@ -74,20 +74,20 @@ export default class Map extends CommonMap {
         // update physics
         this.updatePhysicsBody(x, y)
 
-        /* let graphics = this.chunks[key].graphics
-        if (!graphics) {
-            graphics = this.chunks[key].graphics = new Graphics()
-            this.mapContainer.addChild(graphics)
+        /* let physicGraphics = this.chunks[key].physicGraphics
+        if (!physicGraphics) {
+            physicGraphics = this.chunks[key].physicGraphics = new Graphics()
+            this.mapContainer.addChild(physicGraphics)
         }
-        graphics.clear()
+        physicGraphics.clear()
         this.chunks[key].bodies.forEach(body => {
             if (body.vertices.length > 0) {
-                graphics.beginFill(Math.random() * 0xFFFFFF << 0, 0.5)
-                graphics.moveTo(body.vertices[0].x, body.vertices[0].y)
+                physicGraphics.beginFill(Math.random() * 0xFFFFFF << 0, 0.5)
+                physicGraphics.moveTo(body.vertices[0].x, body.vertices[0].y)
                 for (let i = 1; i < body.vertices.length; i++) {
-                    graphics.lineTo(body.vertices[i].x, body.vertices[i].y)
+                    physicGraphics.lineTo(body.vertices[i].x, body.vertices[i].y)
                 }
-                graphics.moveTo(body.vertices[0].x, body.vertices[0].y)
+                physicGraphics.moveTo(body.vertices[0].x, body.vertices[0].y)
             }
         }) */
     }
@@ -412,6 +412,9 @@ export default class Map extends CommonMap {
             if (this.chunks[x + ';' + y].backgroundSprite) {
                 spriteStack.push(this.chunks[x + ';' + y].backgroundSprite)
                 this.mapContainer.removeChild(this.chunks[x + ';' + y].backgroundSprite)
+            }
+            if (this.chunks[x + ';' + y].physicGraphics) {
+                this.mapContainer.removeChild(this.chunks[x + ';' + y].physicGraphics)
             }
         }
         super.unload(x, y)
