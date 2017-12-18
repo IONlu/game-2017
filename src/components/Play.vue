@@ -25,6 +25,7 @@
                             Enter your name
                         </label>
                         <input
+                            ref="name"
                             class="name-input"
                             type="text"
                             @keyup.enter="onNameEnter"
@@ -32,9 +33,15 @@
                             v-focus
                         />
                     </div>
-                    <div class="button"
-                        @click="showControls=true">
-                        Controls
+                    <div class="navigation">
+                        <div class="button"
+                            @click="showControls=true">
+                            Controls
+                        </div>
+                        <div class="button"
+                            @click="start()">
+                            Start ►
+                        </div>
                     </div>
                 </template>
                 <template v-if="showControls">
@@ -88,9 +95,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="button"
-                        @click="showControls=false">
-                        Back
+                    <div class="navigation">
+                        <div class="button"
+                            @click="showControls=false">
+                            Back
+                        </div>
                     </div>
                 </template>
             </div>
@@ -143,7 +152,13 @@
         padding-bottom: 30px;
     }
 
-    .component-play .dialog-container .splash-screen .button {
+    .component-play .dialog-container .splash-screen .navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .component-play .dialog-container .splash-screen .navigation .button {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -152,9 +167,10 @@
         width: 100px;
         cursor: pointer;
         height: 30px;
+        text-transform: uppercase;
     }
 
-    .component-play .dialog-container .splash-screen .button:hover {
+    .component-play .dialog-container .splash-screen .navigation .button:hover {
         background-color: #FFF;
         color: #000;
     }
@@ -285,6 +301,11 @@
         },
 
         methods: {
+            start () {
+                if (this.$refs.name.value && this.$refs.game) {
+                    this.$refs.game.join(this.$refs.name.value)
+                }
+            },
             onNameEnter (evt) {
                 let name = evt.target.value
                 if (name && this.$refs.game) {
