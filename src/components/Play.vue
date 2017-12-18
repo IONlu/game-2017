@@ -175,7 +175,7 @@
     }
 
     .component-play .dialog-container .splash-screen .welcome-message {
-        padding-bottom: 30px;
+        padding-bottom: 20px;
     }
 
     .component-play .dialog-container .splash-screen .navigation {
@@ -276,7 +276,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin-bottom: 20px;
+        margin-bottom: 30px;
     }
 
     .component-play .dialog-container .splash-screen .wishes-container .wish {
@@ -299,7 +299,7 @@
     }
 
     .component-play .dialog-container .splash-screen .name-dialog {
-        padding-bottom: 30px;
+        margin-bottom: 30px;
         text-align: center;
         display: flex;
         justify-content: center;
