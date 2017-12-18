@@ -1,5 +1,5 @@
 import { Trait } from '../Common/Entity'
-import { Graphics } from 'pixi.js'
+import { Graphics, utils } from 'pixi.js'
 import Vector from '../Common/Vector'
 
 let spriteStack = []
@@ -18,8 +18,11 @@ export default class Tool extends Trait {
 
         this.sprites = []
 
-        window.document.addEventListener('wheel', this._handleMouseWheel)
-        window.document.addEventListener('click', this._handleMouseClick)
+        this.mouseDownTime = false
+        window.document.addEventListener('wheel', this._handleMouseWheel, true)
+        window.document.addEventListener('mousedown', this._handleMouseDown, true)
+        window.document.addEventListener('mouseup', this._handleMouseUp, true)
+        window.document.addEventListener('blur', this._handleMouseUp, true)
     }
 
     _handleMouseWheel = function (evt) {
@@ -44,19 +47,42 @@ export default class Tool extends Trait {
             : 1
     }
 
-    _handleMouseClick = function (evt) {
+    _handleMouseDown = function (evt) {
         if (evt.isTrusted) {
-            let type = this.getTileType()
-            this.socket.emit('setTiles', {
-                tiles: this.touchingTiles,
-                type
-            })
-            this.map.setTiles(this.touchingTiles, type)
+            this.mouseDownTime = performance.now()
         }
     }.bind(this)
 
-    render (entity, t) {
-        super.render(entity, t)
+    _handleMouseUp = function () {
+        this.mouseDownTime = false
+    }.bind(this)
+
+    render (entity, deltaTime, time) {
+        super.render(entity, deltaTime, time)
+
+        if (
+            this.mouseDownTime &&
+            this.touchingTiles.length
+        ) {
+            let progress = (time - this.mouseDownTime) / (this.touchingTiles.length * 100)
+            if (progress >= 1) {
+                this.mouseDownTime = performance.now()
+                let type = this.getTileType()
+                this.socket.emit('setTiles', {
+                    tiles: this.touchingTiles,
+                    type
+                })
+                this.map.setTiles(this.touchingTiles, type)
+            } else {
+                let invertedProgress = 1 - progress
+                let tintColor = this.getMode() === 'dig'
+                    ? utils.rgb2hex([ 1, invertedProgress, invertedProgress ])
+                    : utils.rgb2hex([ invertedProgress, 1, invertedProgress ])
+                this.sprites.forEach(tile => {
+                    tile.tint = tintColor
+                })
+            }
+        }
 
         let targetPosition = this.app.screenToWorldPosition(
             this.app.mousePosition.x,
@@ -128,6 +154,7 @@ export default class Tool extends Trait {
 
         spriteStack.forEach(sprite => {
             sprite.visible = false
+            sprite.tint = 0xFFFFFF
         })
     }
 
@@ -142,8 +169,10 @@ export default class Tool extends Trait {
     destroy () {
         super.destroy()
 
-        window.document.removeEventListener('wheel', this._handleMouseWheel)
-        window.document.removeEventListener('click', this._handleMouseClick)
+        window.document.removeEventListener('wheel', this._handleMouseWheel, true)
+        window.document.removeEventListener('mousedown', this._handleMouseDown, true)
+        window.document.removeEventListener('mouseup', this._handleMouseUp, true)
+        window.document.removeEventListener('blur', this._handleMouseUp, true)
 
         spriteStack = [
             ...spriteStack,
