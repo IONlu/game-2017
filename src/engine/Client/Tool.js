@@ -5,11 +5,12 @@ import Vector from '../Common/Vector'
 let spriteStack = []
 
 export default class Tool extends Trait {
-    constructor (app, map, socket) {
+    constructor (app, map, socket, gui) {
         super()
         this.app = app
         this.map = map
         this.socket = socket
+        this.gui = gui
 
         this.size = 2
         this.position = new Vector()
@@ -31,12 +32,26 @@ export default class Tool extends Trait {
         this.size = Math.max(2, Math.min(6, this.size))
     }.bind(this)
 
+    getMode () {
+        return this.gui.currentItem === 'pickaxe'
+            ? 'dig'
+            : 'build'
+    }
+
+    getTileType () {
+        return this.gui.currentItem === 'pickaxe'
+            ? null
+            : 1
+    }
+
     _handleMouseClick = function (evt) {
         if (evt.isTrusted) {
+            let type = this.getTileType()
             this.socket.emit('setTiles', {
-                tiles: this.touchingTiles
+                tiles: this.touchingTiles,
+                type
             })
-            this.map.setTiles(this.touchingTiles)
+            this.map.setTiles(this.touchingTiles, type)
         }
     }.bind(this)
 
@@ -78,13 +93,17 @@ export default class Tool extends Trait {
 
                 if (
                     mouseDistanceSquared <= radiusSquared &&
-                    playerDistanceSquared <= 8 * 8 &&
-                    this.map.getTile(i, j) !== null
+                    playerDistanceSquared <= 8 * 8
                 ) {
-                    this.touchingTiles.push({
-                        x: i,
-                        y: j
-                    })
+                    let hasTile = this.getMode() === 'dig'
+                        ? this.map.getTile(i, j) !== null
+                        : this.map.getTile(i, j) === null
+                    if (hasTile) {
+                        this.touchingTiles.push({
+                            x: i,
+                            y: j
+                        })
+                    }
                 }
             }
         }

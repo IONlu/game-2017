@@ -59,6 +59,7 @@
     import Controller from '../engine/Common/Controller'
     import Background from '../engine/Client/Background'
     import SnowEntity from '../engine/Client/Snow'
+    import Gui from '../engine/Client/Gui'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
@@ -67,6 +68,8 @@
     import BackgroundLayer2 from '../assets/background/layer2.png'
     import BackgroundLayer3 from '../assets/background/layer3.png'
     import SnowImage from '../assets/particles/snow.png'
+    import PickaxeImage from '../assets/items/pickaxe.png'
+    import ItemContainerImage from '../assets/gui/item-container.png'
 
     import io from 'socket.io-client'
 
@@ -121,6 +124,11 @@
                     this.$player = null
                 }
 
+                if (this.$gui) {
+                    this.$gui.destroy()
+                    this.$gui = null
+                }
+
                 this.isPlaying = false
             })
 
@@ -139,6 +147,8 @@
             this.$game.add('bg_layer2', BackgroundLayer2)
             this.$game.add('bg_layer3', BackgroundLayer3)
             this.$game.add('snow', SnowImage)
+            this.$game.add('item_container', ItemContainerImage)
+            this.$game.add('pickaxe', PickaxeImage)
 
             this.$controller = new Controller()
 
@@ -183,12 +193,17 @@
                         this.$player.addTrait(new ChunkLoaderTrait(this.$map))
                         this.$player.addTrait(new PositionDialogTrait(this.$game))
 
-                        this.$tool = new ToolTrait(this.$game, this.$map, this.$socket)
-                        this.$player.addTrait(this.$tool)
-
                         this.$player.SERVER_ENTITY_ID = id
 
                         this.$player.setController(this.$controller)
+
+                        // add Gui
+                        this.$gui = new Gui(this.$game, {
+                            container: this.$game.createLayer()
+                        })
+
+                        this.$tool = new ToolTrait(this.$game, this.$map, this.$socket, this.$gui)
+                        this.$player.addTrait(this.$tool)
 
                         this.isPlaying = true
                     })

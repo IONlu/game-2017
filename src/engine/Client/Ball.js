@@ -1,11 +1,11 @@
 import CommonBall from '../Common/Ball'
-import { Sprite, Texture } from 'pixi.js'
+import { Sprite } from 'pixi.js'
 
 export default class Ball extends CommonBall {
     constructor (app) {
         super(app)
 
-        this.sprite = new Sprite(new Texture(this.app.resources.ball.texture))
+        this.sprite = new Sprite(this.app.resources.ball.texture)
         this.sprite.anchor.set(0.5)
         this.sprite.scale.x = 0.5
         this.sprite.scale.y = 0.5
