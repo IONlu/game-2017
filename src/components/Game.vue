@@ -58,6 +58,7 @@
     import Keyboard from '../engine/Client/Keyboard'
     import Controller from '../engine/Common/Controller'
     import Background from '../engine/Client/Background'
+    import SnowEntity from '../engine/Client/Snow'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
@@ -65,6 +66,7 @@
     import BackgroundLayer1 from '../assets/background/layer1.png'
     import BackgroundLayer2 from '../assets/background/layer2.png'
     import BackgroundLayer3 from '../assets/background/layer3.png'
+    import SnowImage from '../assets/particles/snow.png'
 
     import io from 'socket.io-client'
 
@@ -125,6 +127,7 @@
             Factory.add('Map', MapEntity)
             Factory.add('Player', PlayerEntity)
             Factory.add('Ball', BallEntity)
+            Factory.add('Snow', SnowEntity)
 
             this.$game = new GameEngine(new Loop(60), this.$refs.renderer)
             this.$game.camera.scale.set(2)
@@ -135,6 +138,7 @@
             this.$game.add('bg_layer1', BackgroundLayer1)
             this.$game.add('bg_layer2', BackgroundLayer2)
             this.$game.add('bg_layer3', BackgroundLayer3)
+            this.$game.add('snow', SnowImage)
 
             this.$controller = new Controller()
 
@@ -155,10 +159,18 @@
 
             this.$game.load()
                 .then(() => {
+                    // init snow
+                    this.$snow = this.$game.createEntity('Snow', {
+                        container: this.$game.createLayer(0)
+                    })
+
+                    // init map
                     this.$map = this.$game.createEntity('Map')
 
                     // init background
                     this.$background = new Background(this.$game)
+
+                    this.$snow.start()
 
                     // start playing
                     this.$socket.on('start', ({ id, position }) => {

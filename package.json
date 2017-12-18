@@ -17,6 +17,7 @@
         "chance": "^1.0.12",
         "cors": "^2.8.4",
         "matter-js": "^0.14.0",
+        "pixi-particles": "^2.1.9",
         "pixi.js": "^4.6.2",
         "simplex-noise": "^2.3.0",
         "socket.io": "^2.0.4",
