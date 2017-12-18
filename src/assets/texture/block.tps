@@ -205,6 +205,7 @@
             <key type="filename">block/dirt.png</key>
             <key type="filename">block/grass.png</key>
             <key type="filename">block/gravel.png</key>
+            <key type="filename">block/planks.png</key>
             <key type="filename">block/red_sand.png</key>
             <key type="filename">block/sand.png</key>
             <key type="filename">block/snow.png</key>
