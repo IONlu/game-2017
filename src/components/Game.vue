@@ -29,6 +29,7 @@
         max-width: 1024px;
         max-height: 768px;
         cursor: crosshair;
+        display: flex;
     }
 
     .component-game .loading {
