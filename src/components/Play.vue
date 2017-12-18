@@ -4,8 +4,8 @@
             class="dialog-container"
             v-if="isConnected && !isLoading && !isPlaying">
             <div class="splash-screen">
+                <div class="santa-bonnet"></div>
                 <template v-if="!showControls">
-                    <div class="santa-bonnet"></div>
                     <div class="welcome-message">
                         <h1>Welcome to this year's ION XMAS Game</h1>
                         <p>
