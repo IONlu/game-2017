@@ -5,6 +5,7 @@
             v-if="isConnected && !isLoading && !isPlaying">
             <div class="splash-screen">
                 <template v-if="!showControls">
+                    <div class="santa-bonnet"></div>
                     <div class="welcome-message">
                         <h1>Welcome to this year's ION XMAS Game</h1>
                         <p>
@@ -32,6 +33,17 @@
                             maxlength="10"
                             v-focus
                         />
+                    </div>
+                    <div class="wishes-container">
+                        <div class="wish">
+                            Best wishes 2018
+                        </div>
+                        <div class="ion-logo">
+                            <img src="../assets/images/ion-logo.svg" />
+                        </div>
+                        <div class="wish">
+                            Meilleurs voeux 2018
+                        </div>
                     </div>
                     <div class="navigation">
                         <div class="button"
@@ -137,6 +149,7 @@
     }
 
     .component-play .dialog-container .splash-screen {
+        position: relative;
         display: flex;
         flex-direction: column;
         border: 1px solid #FFF;
@@ -146,6 +159,19 @@
         width: 800px;
         height: auto;
         font-size: 1.1em;
+    }
+
+    .component-play .dialog-container .splash-screen .santa-bonnet {
+        position: absolute;
+        background-image: url('../assets/images/bonnet.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        padding: 1em;
+        width: 120px;
+        height: 120px;
+        top: -60px;
+        right: -60px;
+        transform: rotate(20deg);
     }
 
     .component-play .dialog-container .splash-screen .welcome-message {
@@ -246,6 +272,32 @@
         box-sizing: border-box;
     }
 
+    .component-play .dialog-container .splash-screen .wishes-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .component-play .dialog-container .splash-screen .wishes-container .wish {
+        font-size: 2em;
+        text-transform: uppercase;
+        flex: 1;
+        animation: color-change 1s infinite;
+    }
+
+    .component-play .dialog-container .splash-screen .wishes-container .ion-logo {
+        background-color: #FFFFFF;
+        width: 200px;
+        padding: 10px;
+        border-radius: 5px;
+        margin: 0 auto;
+    }
+
+    .component-play .dialog-container .splash-screen .wishes-container .ion-logo img {
+        width: 200px;
+    }
+
     .component-play .dialog-container .splash-screen .name-dialog {
         padding-bottom: 30px;
         text-align: center;
@@ -270,6 +322,21 @@
         margin-top: 0.5em;
         font-family: inherit;
         font-size: 2em;
+    }
+
+    @keyframes color-change {
+        0% {
+                color: red;
+                text-shadow: 2px 2px white;
+            }
+        50% {
+                color: white;
+                text-shadow: 2px 2px red;
+            }
+        100% {
+                color: red;
+                text-shadow: 2px 2px white;
+            }
     }
 </style>
 
