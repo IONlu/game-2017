@@ -272,7 +272,7 @@
                 isLoading: true,
                 isPlaying: false,
                 isConnected: false,
-                showControls: true
+                showControls: false
             }
         },
 
