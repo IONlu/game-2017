@@ -94,7 +94,7 @@
                                     <div class="mouse-left"></div>
                                 </div>
                                 <div class="control-description">
-                                    Destroy
+                                    Keep pressed to destroy / build
                                 </div>
                             </div>
                             <div class="control-group-row">
@@ -102,7 +102,7 @@
                                     <div class="mouse-scroll"></div>
                                 </div>
                                 <div class="control-description">
-                                    Scale destroy area
+                                    Scale destroy / build area
                                 </div>
                             </div>
                         </div>
