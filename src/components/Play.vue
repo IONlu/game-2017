@@ -39,7 +39,7 @@
                             Best wishes 2018
                         </div>
                         <div class="ion-logo">
-                            <img src="../assets/images/ion-logo.svg" />
+                            <img src="../assets/images/ion-logo-white.png" />
                         </div>
                         <div class="wish">
                             Meilleurs voeux 2018
@@ -94,7 +94,7 @@
                                     <div class="mouse-left"></div>
                                 </div>
                                 <div class="control-description">
-                                    Destroy
+                                    Keep pressed to destroy / build
                                 </div>
                             </div>
                             <div class="control-group-row">
@@ -102,7 +102,7 @@
                                     <div class="mouse-scroll"></div>
                                 </div>
                                 <div class="control-description">
-                                    Scale destroy area
+                                    Scale destroy / build area
                                 </div>
                             </div>
                         </div>
@@ -276,7 +276,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin-bottom: 30px;
+        align-items: center;
     }
 
     .component-play .dialog-container .splash-screen .wishes-container .wish {
@@ -287,7 +287,7 @@
     }
 
     .component-play .dialog-container .splash-screen .wishes-container .ion-logo {
-        background-color: #FFFFFF;
+        /*background-color: #FFFFFF;*/
         width: 200px;
         padding: 10px;
         border-radius: 5px;
@@ -299,7 +299,6 @@
     }
 
     .component-play .dialog-container .splash-screen .name-dialog {
-        margin-bottom: 30px;
         text-align: center;
         display: flex;
         justify-content: center;
