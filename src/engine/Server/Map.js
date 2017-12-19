@@ -21,9 +21,6 @@ export default class Map extends CommonMap {
                     delete this._loadingChunks[x + ';' + y]
                     return this._handleChunkData(x, y, chunkData)
                 })
-            this._loadingChunks[x + ';' + y].then(() => {
-                this.updatePhysicsBody(x, y)
-            })
         }
         return this._loadingChunks[x + ';' + y]
     }

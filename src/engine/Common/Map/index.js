@@ -22,9 +22,15 @@ export default class Map extends Entity {
         for (let i = x - 1; i < x + 2; i++) {
             for (let j = y - 1; j < y + 2; j++) {
                 if (i !== x || j !== y) {
-                    this.getChunk(i, j).isDirty = true
+                    this.forceChunkUpdate(i, j)
                 }
             }
+        }
+    }
+
+    forceChunkUpdate (x, y) {
+        if (this.hasChunk(x, y)) {
+            this.getChunk(x, y).isDirty = true
         }
     }
 
@@ -61,12 +67,25 @@ export default class Map extends Entity {
     setTile (x, y, type = null) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
-        this.forceNeighbourChunkUpdate(chunkX, chunkY)
-        return this.getChunk(chunkX, chunkY).set(
-            (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE,
-            (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE,
-            type
-        )
+        let tileX = (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE
+        let tileY = (CHUNK_SIZE + (y % CHUNK_SIZE)) % CHUNK_SIZE
+
+        // update neighbours if necessary
+        if (tileX === 0) {
+            this.forceChunkUpdate(chunkX - 1, chunkY)
+        }
+        if (tileY === 0) {
+            this.forceChunkUpdate(chunkX, chunkY - 1)
+        }
+        if (tileX === CHUNK_SIZE - 1) {
+            this.forceChunkUpdate(chunkX + 1, chunkY)
+        }
+        if (tileY === CHUNK_SIZE - 1) {
+            this.forceChunkUpdate(chunkX, chunkY + 1)
+        }
+
+        return this.getChunk(chunkX, chunkY)
+            .set(tileX, tileY, type)
     }
 
     setTiles (tiles, type = null) {
