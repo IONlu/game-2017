@@ -67,6 +67,8 @@ const createPlayer = (name) => {
 
     players.push(player)
 
+    map.setEntities([ ...players, ...balls ])
+
     return player
 }
 
@@ -77,6 +79,8 @@ const destroyPlayer = entity => {
     }
 
     game.destroyEntity(entity)
+
+    map.setEntities([ ...players, ...balls ])
 }
 
 const playerData = () => {
@@ -107,6 +111,8 @@ const createBall = (x) => {
 
     balls.push(ball)
 
+    map.setEntities([ ...players, ...balls ])
+
     return ball
 }
 
@@ -117,6 +123,8 @@ const destroyBall = entity => {
     }
 
     game.destroyEntity(entity)
+
+    map.setEntities([ ...players, ...balls ])
 }
 
 const ballsData = () => {

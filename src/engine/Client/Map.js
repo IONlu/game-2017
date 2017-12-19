@@ -73,6 +73,7 @@ export default class Map extends CommonMap {
 
         // update physics
         this.updatePhysicsBody(x, y)
+        this.loadPhysics(x, y)
 
         /* let physicGraphics = this.chunks[key].physicGraphics
         if (!physicGraphics) {
@@ -388,22 +389,14 @@ export default class Map extends CommonMap {
         return Promise.all(chunksPromise)
     }
 
-    async unloadChunksByPosition (x, y, minDistance = 4000) {
-        let minDistanceSquared = minDistance * minDistance
-        Object.keys(this.chunks).forEach(key => {
-            let { x: chunkX, y: chunkY } = this.chunks[key]
-            let centerX = (chunkX + 0.5) * (8 * CHUNK_SIZE)
-            let centerY = (chunkY + 0.5) * (8 * CHUNK_SIZE)
-            let dx = centerX - x
-            let dy = centerY - y
-            let distanceSquared = (dx * dx) + (dy * dy)
-            if (distanceSquared >= minDistanceSquared) {
-                this.unload(chunkX, chunkY)
-            }
+    async unloadChunksByPosition (x, y, maxDistance = 4000) {
+        let { outside } = this.getChunksByDistance([{ x, y }], maxDistance)
+        outside.forEach(chunk => {
+            this.unloadChunk(chunk.x, chunk.y)
         })
     }
 
-    unload (x, y) {
+    unloaChunk (x, y) {
         if (this.chunks.hasOwnProperty(x + ';' + y)) {
             if (this.chunks[x + ';' + y].sprite) {
                 spriteStack.push(this.chunks[x + ';' + y].sprite)
@@ -417,6 +410,6 @@ export default class Map extends CommonMap {
                 this.mapContainer.removeChild(this.chunks[x + ';' + y].physicGraphics)
             }
         }
-        super.unload(x, y)
+        super.unloadChunk(x, y)
     }
 }

@@ -117,16 +117,44 @@ export default class Map extends Entity {
             )
         })
 
-        if (this.chunks[chunkKey].bodies) {
-            this.chunks[chunkKey].bodies.forEach(body => {
+        if (!this.chunks[chunkKey].hasOwnProperty('physicsLoaded')) {
+            this.chunks[chunkKey].physicsLoaded = false
+        }
+
+        let physicsLoaded = this.chunks[chunkKey].physicsLoaded
+        this.unloadPhysics(chunkX, chunkY)
+        this.chunks[chunkKey].bodies = bodies.filter(body => body)
+        if (physicsLoaded) {
+            this.loadPhysics(chunkX, chunkY)
+        }
+    }
+
+    unloadPhysics (chunkX, chunkY) {
+        let chunkKey = chunkX + ';' + chunkY
+        if (!this.chunks.hasOwnProperty(chunkKey)) {
+            return
+        }
+        let chunk = this.chunks[chunkKey]
+        if (chunk.physicsLoaded && chunk.bodies) {
+            chunk.physicsLoaded = false
+            chunk.bodies.forEach(body => {
                 World.remove(this.app.physics.world, body)
             })
         }
+    }
 
-        this.chunks[chunkKey].bodies = bodies.filter(body => body)
-        this.chunks[chunkKey].bodies.forEach(body => {
-            World.add(this.app.physics.world, body)
-        })
+    loadPhysics (chunkX, chunkY) {
+        let chunkKey = chunkX + ';' + chunkY
+        if (!this.chunks.hasOwnProperty(chunkKey)) {
+            return
+        }
+        let chunk = this.chunks[chunkKey]
+        if (!chunk.physicsLoaded && chunk.bodies) {
+            chunk.physicsLoaded = true
+            chunk.bodies.forEach(body => {
+                World.add(this.app.physics.world, body)
+            })
+        }
     }
 
     createChunkIfNone (x, y) {
@@ -142,7 +170,7 @@ export default class Map extends Entity {
         return this.chunks[x + ';' + y].chunk
     }
 
-    unload (x, y) {
+    unloadChunk (x, y) {
         if (!this.chunks.hasOwnProperty(x + ';' + y)) {
             return
         }
@@ -152,5 +180,27 @@ export default class Map extends Entity {
             })
         }
         delete this.chunks[x + ';' + y]
+    }
+
+    getChunksByDistance (positions, maxDistance) {
+        let inside = []
+        let outside = []
+        let maxDistanceSquared = maxDistance * maxDistance
+        Object.keys(this.chunks).forEach(key => {
+            let chunk = this.chunks[key]
+            let centerX = (chunk.x + 0.5) * (8 * CHUNK_SIZE)
+            let centerY = (chunk.y + 0.5) * (8 * CHUNK_SIZE)
+            for (let i = 0; i < positions.length; i++) {
+                let dx = centerX - positions[i].x
+                let dy = centerY - positions[i].y
+                let distanceSquared = (dx * dx) + (dy * dy)
+                if (distanceSquared <= maxDistanceSquared) {
+                    inside.push(chunk)
+                    return
+                }
+            }
+            outside.push(chunk)
+        })
+        return { inside, outside }
     }
 }

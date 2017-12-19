@@ -8,6 +8,11 @@ export default class Map extends CommonMap {
 
         this._loadingChunks = {}
         this._dirtyChunkData = {}
+        this.entities = []
+    }
+
+    setEntities (entities) {
+        this.entities = entities
     }
 
     async loadChunk (x, y) {
@@ -54,6 +59,7 @@ export default class Map extends CommonMap {
     update (updateData) {
         super.update(updateData)
         this.updateDirtyChunkData()
+        this.loadUnloadPhysicsBodies()
         this.updateDirtyPhysicsBodies()
         this.resetDirtyTags()
     }
@@ -70,6 +76,24 @@ export default class Map extends CommonMap {
                     }
                 }
             })
+    }
+
+    loadUnloadPhysicsBodies () {
+        let { inside, outside } = this.getChunksByDistance(
+            this.entities.map(entity => {
+                return {
+                    x: entity.position.x,
+                    y: entity.position.y
+                }
+            }),
+            1000
+        )
+        inside.forEach(chunk => {
+            this.loadPhysics(chunk.x, chunk.y)
+        })
+        outside.forEach(chunk => {
+            this.unloadPhysics(chunk.x, chunk.y)
+        })
     }
 
     resetDirtyChunkData () {
