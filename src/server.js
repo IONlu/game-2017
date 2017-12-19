@@ -142,6 +142,9 @@ io.on('connection', socket => {
     socket.on('disconnect', () => {
         if (socket.entity) {
             destroyPlayer(socket.entity)
+            if (players.length === 0) {
+                game.stop()
+            }
         }
     })
 
@@ -167,6 +170,10 @@ io.on('connection', socket => {
 
     socket.on('start', name => {
         socket.entity = createPlayer(name)
+
+        if (players.length === 1) {
+            game.start()
+        }
 
         map.loadChunksByPosition(socket.entity.body.body.position.x, socket.entity.body.body.position.y)
             .then(() => {
@@ -197,8 +204,6 @@ setInterval(() => {
         chunks: map.resetDirtyChunkData()
     })
 }, 50)
-
-game.start()
 
 // start listening
 server.listen(PORT)
