@@ -39,7 +39,7 @@
                             Best wishes 2018
                         </div>
                         <div class="ion-logo">
-                            <img src="../assets/images/ion-logo.svg" />
+                            <img src="../assets/images/ion-logo-white.png" />
                         </div>
                         <div class="wish">
                             Meilleurs voeux 2018
@@ -276,7 +276,7 @@
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin-bottom: 30px;
+        align-items: center;
     }
 
     .component-play .dialog-container .splash-screen .wishes-container .wish {
@@ -287,7 +287,7 @@
     }
 
     .component-play .dialog-container .splash-screen .wishes-container .ion-logo {
-        background-color: #FFFFFF;
+        /*background-color: #FFFFFF;*/
         width: 200px;
         padding: 10px;
         border-radius: 5px;
@@ -299,7 +299,6 @@
     }
 
     .component-play .dialog-container .splash-screen .name-dialog {
-        margin-bottom: 30px;
         text-align: center;
         display: flex;
         justify-content: center;
