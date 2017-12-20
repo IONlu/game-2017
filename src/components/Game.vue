@@ -184,10 +184,9 @@
                     this.$snow.start()
 
                     // start playing
-                    this.$socket.on('start', ({ id, position }) => {
+                    this.$socket.on('start', ({ id, position, colorIndex }) => {
                         this.$player = this.$game.createEntity('Player', {
-                            position,
-                            colorIndex: Math.floor(Math.random() * 14)
+                            position, colorIndex
                         })
                         this.$player.SERVER_ENTITY_ID = id
 
@@ -233,10 +232,14 @@
                                 return
                             }
                             if (!remotePlayers.hasOwnProperty(key)) {
-                                remotePlayers[key] = this.$game.createEntity('Player')
+                                remotePlayers[key] = this.$game.createEntity('Player', {
+                                    colorIndex: data.player[key].colorIndex
+                                })
                                 remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
                             }
                             remotePlayers[key].body.importState(data.player[key].data)
+                            remotePlayers[key].isRunning = data.player[key].isRunning
+                            remotePlayers[key].isJumping = data.player[key].isJumping
                         })
 
                         data.chunks.forEach(chunk => {

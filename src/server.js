@@ -59,7 +59,8 @@ const createPlayer = (name) => {
         position: {
             x: startX,
             y: startY
-        }
+        },
+        colorIndex: Math.floor(Math.random() * 14)
     })
     player.PLAYER_NAME = name.slice(0, 10)
     player.setController(new Controller())
@@ -88,6 +89,9 @@ const playerData = () => {
     players.forEach(entity => {
         data[entity.ENTITY_ID] = {
             name: entity.PLAYER_NAME,
+            colorIndex: entity.colorIndex,
+            isRunning: entity.isRunning,
+            isJumping: entity.isJumping,
             data: entity.body.exportState()
         }
     })
@@ -182,7 +186,8 @@ io.on('connection', socket => {
                     position: {
                         x: socket.entity.body.body.position.x,
                         y: socket.entity.body.body.position.y
-                    }
+                    },
+                    colorIndex: socket.entity.colorIndex
                 })
             })
 
