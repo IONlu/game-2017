@@ -5,20 +5,18 @@
             v-if="isConnected && !isLoading && !isPlaying">
             <div class="splash-screen">
                 <div class="santa-bonnet"></div>
-                <template v-if="!showControls">
+                <template v-if="!showControls && !showAbout">
                     <div class="welcome-message">
-                        <h1>Welcome to this year's ION XMAS Game</h1>
+                        <h1>Welcome to the ION XMAS game</h1>
                         <p>
-                            Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat,
-                            vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio
-                            dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.
+                            This year, join us in our game to explore a giant 2D world together.
                         </p>
                         <p>
-                            Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut
-                            laoreet dolore magna aliquam erat volutpat.
+                          Use your pickaxe to dig through the ground and rock or switch your tools and use your creative skills to build sky fortresses or underground bunkers.
+Join forces with the other players to build even greater structures or toy around with other players.
                         </p>
                         <p>
-                            Enjoy, your ION Team.
+                            Quickly check the controls, enter your characters' name and go ahead and join the fray.
                         </p>
                     </div>
                     <div class="name-dialog">
@@ -46,6 +44,10 @@
                         </div>
                     </div>
                     <div class="navigation">
+                      <div class="button"
+                          @click="showAbout=true">
+                          About
+                      </div>
                         <div class="button"
                             @click="showControls=true">
                             Controls
@@ -114,6 +116,41 @@
                         </div>
                     </div>
                 </template>
+                <template v-if="showAbout">
+                  <div class="about">
+                    <div>
+                      <h3>Programming and Concept</h3>
+                    </div>
+                    <div>
+                      <a href="https://github.com/dattn">Daniel Duton</a>
+                    </div>
+                    <div>
+                      <h3>Graphics</h3>
+                    </div>
+                    <div>Mike Hanff</div>
+                    <div><h3>Contributors & Testers</h3></div>
+                    <div>
+                      <a href="https://github.com/mouratoclaudio">Claudio Mourato</a><br/>
+                      <a href="https://github.com/m4s0fd1s">Ben Thinnes</a><br/>
+                      <a href="https://github.com/cries">Christian Ries</a><br/></div>
+                      <a href="https://github.com/jedi-marcus">Marc Morocutti</a><br/>
+                    <div>
+                      <h3>Textures & Sprites</h3>
+                    </div>
+                    <div>
+                        <a href="https://www.johnsmithlegacy.co.uk/index.php">Texture Pack - John Smith Legacy</a>
+                    </div>
+                    <div>
+                        <a href="https://opengameart.org/content/player-base-from-crosstown-smash-redshrike-mod">Player Sprites - Crosstown Smash Mod</a>
+                    </div>
+                  </div>
+                  <div class="navigation">
+                      <div class="button"
+                          @click="showAbout=false">
+                          Back
+                      </div>
+                  </div>
+                </template>
             </div>
         </div>
         <game
@@ -175,7 +212,8 @@
     }
 
     .component-play .dialog-container .splash-screen .welcome-message {
-        padding-bottom: 20px;
+        padding: 0 20px 20px 20px;
+        font-size: 1em;
     }
 
     .component-play .dialog-container .splash-screen .navigation {
@@ -206,6 +244,24 @@
         justify-content: center;
         flex-direction: column;
     }
+
+    .component-play .dialog-container .splash-screen .about {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        font-size: 1.2em;
+        padding-bottom: 20px;
+    }
+
+      .component-play .dialog-container .splash-screen .about h3 {
+        color: white;
+        text-shadow: 2px 2px red;
+      }
+
+      .component-play .dialog-container .splash-screen .about a {
+        text-decoration: none;
+        color: white;
+      }
 
     .component-play .dialog-container .splash-screen .controls .control-group {
         display: flex;
@@ -309,7 +365,7 @@
     .component-play .dialog-container .splash-screen .name-dialog label {
         display: block;
         text-transform: uppercase;
-        font-size: 1.3em;
+        font-size: 1.1em;
     }
 
     .component-play .dialog-container .splash-screen .name-input {
@@ -354,7 +410,8 @@
                 isLoading: true,
                 isPlaying: false,
                 isConnected: false,
-                showControls: false
+                showControls: false,
+                showAbout: false
             }
         },
 
