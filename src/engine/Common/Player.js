@@ -6,6 +6,7 @@ export default class Player extends Entity {
     constructor (app, options = {}) {
         super(app)
 
+        this.colorIndex = (options.colorIndex % 14) || 0
         let startPosition = options.position || {
             x: 0,
             y: 0

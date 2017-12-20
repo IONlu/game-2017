@@ -28,7 +28,7 @@ export default class Player extends CommonPlayer {
                 return new Texture(
                     this.app.resources.player.texture,
                     new Rectangle(
-                        (index % 20) * 48, Math.floor(index / 20) * 56,
+                        (index % 20) * 48, (Math.floor(index / 20) * 56) + (6 * 56 * this.colorIndex),
                         48, 56
                     )
                 )

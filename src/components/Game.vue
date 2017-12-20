@@ -186,7 +186,8 @@
                     // start playing
                     this.$socket.on('start', ({ id, position }) => {
                         this.$player = this.$game.createEntity('Player', {
-                            position
+                            position,
+                            colorIndex: Math.floor(Math.random() * 14)
                         })
                         this.$player.SERVER_ENTITY_ID = id
 
