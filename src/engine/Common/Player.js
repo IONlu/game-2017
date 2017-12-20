@@ -41,6 +41,8 @@ export default class Player extends Entity {
 
     setController (controller) {
         this.controller = controller
+        this.isRunning = false
+        this.isJumping = false
     }
 
     update (updateData) {
@@ -50,10 +52,9 @@ export default class Player extends Entity {
 
         super.update(updateData)
 
-        this.isRunning = false
-        this.isJumping = false
-
         if (this.controller) {
+            this.isRunning = false
+            this.isJumping = false
             if (
                 this.controller.is('left') &&
                 !this.body.isColliding(BodyTrait.COLLISION_DIRECTION_LEFT)
