@@ -186,7 +186,9 @@
                     // start playing
                     this.$socket.on('start', ({ id, position, colorIndex }) => {
                         this.$player = this.$game.createEntity('Player', {
-                            position, colorIndex
+                            position,
+                            colorIndex,
+                            bindSpriteDirectionToMouse: true
                         })
                         this.$player.SERVER_ENTITY_ID = id
 

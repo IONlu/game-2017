@@ -12,6 +12,7 @@ export default class Player extends CommonPlayer {
         }
         this.initAnimationTextures()
         this.currentAnimation = 'default'
+        this.bindSpriteDirectionToMouse = options.bindSpriteDirectionToMouse || false
 
         this.sprite = new Sprite(this.animationTextures[this.currentAnimation][0])
         this.sprite.anchor.set(0.5)
@@ -60,19 +61,32 @@ export default class Player extends CommonPlayer {
         )
         this.sprite.rotation = this.old.rotation + (dtime * (this.rotation - this.old.rotation))
 
-        // upate texture
+        // update texture
         this.sprite.texture = this.animationTextures[this.currentAnimation][Math.floor(time / 200) % this.animationTextures[this.currentAnimation].length]
 
-        // turn sprite in mouse direction
-        let targetPosition = this.app.screenToWorldPosition(
-            this.app.mousePosition.x,
-            this.app.mousePosition.y
-        )
-        if (targetPosition.x - this.sprite.position.x > 0) {
-            this.sprite.scale.x = Math.abs(this.sprite.scale.x)
-        }
-        if (targetPosition.x - this.sprite.position.x < 0) {
-            this.sprite.scale.x = -Math.abs(this.sprite.scale.x)
+        // update sprite direction
+        this.updateSpriteDirection()
+    }
+
+    updateSpriteDirection () {
+        if (this.bindSpriteDirectionToMouse) {
+            // turn sprite in mouse direction
+            let targetPosition = this.app.screenToWorldPosition(
+                this.app.mousePosition.x,
+                this.app.mousePosition.y
+            )
+            if (targetPosition.x - this.sprite.position.x > 0) {
+                this.sprite.scale.x = Math.abs(this.sprite.scale.x)
+            }
+            if (targetPosition.x - this.sprite.position.x < 0) {
+                this.sprite.scale.x = -Math.abs(this.sprite.scale.x)
+            }
+        } else {
+            if (this.body.body.velocity.x > 0) {
+                this.sprite.scale.x = Math.abs(this.sprite.scale.x)
+            } else if (this.body.body.velocity.x < 0) {
+                this.sprite.scale.x = -Math.abs(this.sprite.scale.x)
+            }
         }
     }
 
