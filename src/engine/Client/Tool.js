@@ -2,6 +2,9 @@ import { Trait } from '../Common/Entity'
 import { Graphics, utils } from 'pixi.js'
 import Vector from '../Common/Vector'
 
+import BlockData from '@/assets/texture/block.json'
+const TEXTURE_INDEX = Object.keys(BlockData.frames)
+
 let spriteStack = []
 
 export default class Tool extends Trait {
@@ -44,7 +47,7 @@ export default class Tool extends Trait {
     getTileType () {
         return this.gui.currentItem === 'pickaxe'
             ? null
-            : 1
+            : TEXTURE_INDEX.indexOf(this.gui.currentItem) + 1
     }
 
     _handleMouseDown = function (evt) {
