@@ -72,6 +72,16 @@
     import PickaxeImage from '../assets/items/pickaxe.png'
     import ItemContainerImage from '../assets/gui/item-container.png'
     import TreeImage from '../assets/texture/tree.png'
+    import Gift1Image from '../assets/texture/gift/gift1.png'
+    import Gift2Image from '../assets/texture/gift/gift2.png'
+    import Gift3Image from '../assets/texture/gift/gift3.png'
+    import Gift4Image from '../assets/texture/gift/gift4.png'
+    import Gift5Image from '../assets/texture/gift/gift5.png'
+    import Gift6Image from '../assets/texture/gift/gift6.png'
+    import Cane1Image from '../assets/texture/cane/cane1.png'
+    import Cane2Image from '../assets/texture/cane/cane2.png'
+    import Cane3Image from '../assets/texture/cane/cane3.png'
+    import Cane4Image from '../assets/texture/cane/cane4.png'
 
     import io from 'socket.io-client'
 
@@ -152,6 +162,18 @@
             this.$game.add('item_container', ItemContainerImage)
             this.$game.add('pickaxe', PickaxeImage)
             this.$game.add('tree', TreeImage)
+
+            this.$game.add('gift1', Gift1Image)
+            this.$game.add('gift2', Gift2Image)
+            this.$game.add('gift3', Gift3Image)
+            this.$game.add('gift4', Gift4Image)
+            this.$game.add('gift5', Gift5Image)
+            this.$game.add('gift6', Gift6Image)
+
+            this.$game.add('cane1', Cane1Image)
+            this.$game.add('cane2', Cane2Image)
+            this.$game.add('cane3', Cane3Image)
+            this.$game.add('cane4', Cane4Image)
 
             this.$controller = new Controller()
 

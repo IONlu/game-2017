@@ -117,3 +117,13 @@ const TreeNoise = new SimplexNoise(random(SEED + '::TREE'))
 export const isTree = x => {
     return TreeNoise.noise2D(x, 0) > 0.5
 }
+
+const GiftNoise = new SimplexNoise(random(SEED + '::GIFT'))
+export const isGift = x => {
+    return GiftNoise.noise2D(x, 0) > 0.5
+}
+
+const CaneNoise = new SimplexNoise(random(SEED + '::CANE'))
+export const isCane = x => {
+    return CaneNoise.noise2D(x, 0) > 0.5
+}
