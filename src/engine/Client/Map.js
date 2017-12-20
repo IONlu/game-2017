@@ -3,16 +3,18 @@ import { Texture, RenderTexture, Sprite, Container, Graphics, Rectangle, utils }
 import { CHUNK_SIZE } from '@/config'
 import BlockData from '@/assets/texture/block.json'
 import axios from 'axios'
-import { height as getTerrainHeight } from '../Common/Terrain'
+import { height as getTerrainHeight, isTree } from '../Common/Terrain'
 
 const TEXTURE_INDEX = Object.keys(BlockData.frames)
 const spriteStack = []
+const treeStack = []
 
 export default class Map extends CommonMap {
     constructor (app) {
         super(app)
 
         this._loadingChunks = {}
+        this.trees = []
 
         this.initTileTextures()
 
@@ -340,6 +342,26 @@ export default class Map extends CommonMap {
                 this.chunks[key].sprite.visible = visible
             }
         })
+
+        // draw Trees
+        this.trees.forEach(tree => {
+            tree.visible = false
+            treeStack.push(tree)
+        })
+        this.trees = []
+        for (let i = (Math.floor(viewBox.x / 50) * 50) - 100; i < viewBox.x + viewBox.width + 100; i += 50) {
+            if (isTree(i / 8)) {
+                let tree = treeStack.pop() || (() => {
+                    let sprite = new Sprite(this.app.resources.tree.texture)
+                    sprite.anchor.set(0.5, 0.9)
+                    this.mapContainer.addChildAt(sprite, 0)
+                    return sprite
+                })()
+                tree.visible = true
+                tree.position.set(i, -(getTerrainHeight(i / 8) * 8))
+                this.trees.push(tree)
+            }
+        }
     }
 
     handleRender (t) {

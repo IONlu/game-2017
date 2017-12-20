@@ -71,6 +71,7 @@
     import SnowImage from '../assets/particles/snow.png'
     import PickaxeImage from '../assets/items/pickaxe.png'
     import ItemContainerImage from '../assets/gui/item-container.png'
+    import TreeImage from '../assets/texture/tree.png'
 
     import io from 'socket.io-client'
 
@@ -150,6 +151,7 @@
             this.$game.add('snow', SnowImage)
             this.$game.add('item_container', ItemContainerImage)
             this.$game.add('pickaxe', PickaxeImage)
+            this.$game.add('tree', TreeImage)
 
             this.$controller = new Controller()
 

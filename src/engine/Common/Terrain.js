@@ -112,3 +112,8 @@ export const tile = (x, y, background = false) => {
 
     return BLOCK_TYPES[blockType]
 }
+
+const TreeNoise = new SimplexNoise(random(SEED + '::TREE'))
+export const isTree = x => {
+    return TreeNoise.noise2D(x, 0) > 0.5
+}
