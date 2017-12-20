@@ -67,7 +67,7 @@ export default class Tool extends Trait {
             this.mouseDownTime &&
             this.touchingTiles.length
         ) {
-            let progress = (time - this.mouseDownTime) / (this.touchingTiles.length * 100)
+            let progress = (time - this.mouseDownTime) / ((this.touchingTiles.length * 50) + 400)
             if (progress >= 1) {
                 this.mouseDownTime = performance.now()
                 let type = this.getTileType()
