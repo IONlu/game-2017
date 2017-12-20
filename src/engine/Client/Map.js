@@ -73,7 +73,6 @@ export default class Map extends CommonMap {
 
         // update physics
         this.updatePhysicsBody(x, y)
-        this.loadPhysics(x, y)
 
         /* let physicGraphics = this.chunks[key].physicGraphics
         if (!physicGraphics) {

@@ -8,6 +8,11 @@ export default class Map extends Entity {
         super(app)
 
         this.chunks = {}
+        this.entities = []
+    }
+
+    setEntities (entities) {
+        this.entities = entities
     }
 
     _handleChunkData (x, y, chunkData) {
@@ -16,6 +21,11 @@ export default class Map extends Entity {
         chunk.isDummy = false
         this.forceNeighbourChunkUpdate(x, y)
         return chunk
+    }
+
+    update (updateData) {
+        super.update(updateData)
+        this.loadUnloadPhysicsBodies(this.entities, CHUNK_SIZE * 8)
     }
 
     forceNeighbourChunkUpdate (x, y) {
@@ -202,5 +212,23 @@ export default class Map extends Entity {
             outside.push(chunk)
         })
         return { inside, outside }
+    }
+
+    loadUnloadPhysicsBodies (entities, distance) {
+        let { inside, outside } = this.getChunksByDistance(
+            entities.map(entity => {
+                return {
+                    x: entity.position.x,
+                    y: entity.position.y
+                }
+            }),
+            distance
+        )
+        inside.forEach(chunk => {
+            this.loadPhysics(chunk.x, chunk.y)
+        })
+        outside.forEach(chunk => {
+            this.unloadPhysics(chunk.x, chunk.y)
+        })
     }
 }

@@ -188,25 +188,27 @@
                         this.$player = this.$game.createEntity('Player', {
                             position
                         })
-
-                        this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
-                        this.$player.addTrait(new UpdateBackgroundTrait(this.$background))
-                        this.$player.addTrait(new ChunkLoaderTrait(this.$map))
-                        this.$player.addTrait(new PositionDialogTrait(this.$game))
-
                         this.$player.SERVER_ENTITY_ID = id
 
-                        this.$player.setController(this.$controller)
+                        this.$map.loadChunksByPosition(position.x, position.y)
+                            .then(() => {
+                                this.$player.addTrait(new UpdateCameraTrait(this.$game.camera))
+                                this.$player.addTrait(new UpdateBackgroundTrait(this.$background))
+                                this.$player.addTrait(new ChunkLoaderTrait(this.$map))
+                                this.$player.addTrait(new PositionDialogTrait(this.$game))
 
-                        // add Gui
-                        this.$gui = new Gui(this.$game, {
-                            container: this.$game.createLayer()
-                        })
+                                this.$player.setController(this.$controller)
 
-                        this.$tool = new ToolTrait(this.$game, this.$map, this.$socket, this.$gui)
-                        this.$player.addTrait(this.$tool)
+                                // add Gui
+                                this.$gui = new Gui(this.$game, {
+                                    container: this.$game.createLayer()
+                                })
 
-                        this.isPlaying = true
+                                this.$tool = new ToolTrait(this.$game, this.$map, this.$socket, this.$gui)
+                                this.$player.addTrait(this.$tool)
+
+                                this.isPlaying = true
+                            })
                     })
 
                     // remote entities
@@ -254,10 +256,21 @@
                             }
                             balls[key].body.importState(data.balls[key].data)
                         })
-                    })
 
-                    // preload chunks
-                    return this.$map.loadChunksByPosition()
+                        if (this.$map) {
+                            let entities = []
+                            if (this.$player) {
+                                entities.push(this.$player)
+                            }
+                            for (let key in remotePlayers) {
+                                entities.push(remotePlayers[key])
+                            }
+                            for (let key in balls) {
+                                entities.push(balls[key])
+                            }
+                            this.$map.setEntities(entities)
+                        }
+                    })
                 })
                 .then(() => {
                     this.isLoading = false
