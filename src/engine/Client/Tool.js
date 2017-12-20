@@ -46,7 +46,7 @@ export default class Tool extends Trait {
 
     getTileType () {
         return this.gui.currentItem === 'pickaxe'
-            ? null
+            ? 0
             : TEXTURE_INDEX.indexOf(this.gui.currentItem) + 1
     }
 
@@ -125,8 +125,8 @@ export default class Tool extends Trait {
                     playerDistanceSquared <= 8 * 8
                 ) {
                     let hasTile = this.getMode() === 'dig'
-                        ? this.map.getTile(i, j) !== null
-                        : this.map.getTile(i, j) === null
+                        ? this.map.getTile(i, j) !== 0
+                        : this.map.getTile(i, j) === 0
                     if (hasTile) {
                         this.touchingTiles.push({
                             x: i,

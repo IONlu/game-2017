@@ -74,7 +74,7 @@ export default class Map extends Entity {
         return neighbours
     }
 
-    setTile (x, y, type = null) {
+    setTile (x, y, type = 0) {
         let chunkX = Math.floor(x / CHUNK_SIZE)
         let chunkY = Math.floor(y / CHUNK_SIZE)
         let tileX = (CHUNK_SIZE + (x % CHUNK_SIZE)) % CHUNK_SIZE
@@ -98,7 +98,7 @@ export default class Map extends Entity {
             .set(tileX, tileY, type)
     }
 
-    setTiles (tiles, type = null) {
+    setTiles (tiles, type = 0) {
         tiles.forEach(({ x, y }) => {
             this.setTile(x, y, type)
         })

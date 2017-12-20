@@ -81,7 +81,7 @@ export const isTile = (x, y, background = false) => {
 let renderBlockTypes = [ 'clay', 'dirt', 'gravel', 'sand', 'red_sand', 'stone' ]
 export const tile = (x, y, background = false) => {
     if (!isTile(x, y, background)) {
-        return undefined
+        return 0
     }
 
     let noise = renderBlockTypes.map(name => {

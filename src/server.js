@@ -197,7 +197,7 @@ io.on('connection', socket => {
     socket.on('setTiles', data => {
         map.setTiles(data.tiles, data.hasOwnProperty('type')
             ? data.type
-            : null
+            : 0
         )
     })
 })
