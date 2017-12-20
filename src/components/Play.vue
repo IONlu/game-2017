@@ -124,13 +124,10 @@ Join forces with the other players to build even greater structures or toy aroun
                     <div>
                       <a href="https://github.com/dattn">Daniel Duton</a>
                     </div>
-                    <div>
-                      <h3>Graphics</h3>
-                    </div>
-                    <div>Mike Hanff</div>
                     <div><h3>Contributors & Testers</h3></div>
                     <div>
                       <a href="https://github.com/mouratoclaudio">Claudio Mourato</a><br/>
+                      Mike Hanff<br/>
                       <a href="https://github.com/m4s0fd1s">Ben Thinnes</a><br/>
                       <a href="https://github.com/cries">Christian Ries</a><br/></div>
                       <a href="https://github.com/jedi-marcus">Marc Morocutti</a><br/>
