@@ -1,5 +1,6 @@
 import express from 'express'
 import socketio from 'socket.io'
+import fs from 'fs-extra'
 import http from 'http'
 import path from 'path'
 import cors from 'cors'
@@ -17,6 +18,7 @@ const PORT = 4200
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
+const logFile = fs.createWriteStream('./server.log', {flags: 'a'})
 
 // temporary fix for matterjs not working on nodejs https://github.com/liabru/matter-js/issues/468
 global.HTMLElement = class DummyHTMLElement {}
@@ -141,14 +143,21 @@ const ballsData = () => {
     return data
 }
 
+const log = (message) => {
+    console.log(message)
+    logFile.write(message + '\n')
+}
+
 // handle socket io connections
 io.on('connection', socket => {
     socket.on('disconnect', () => {
         if (socket.entity) {
+            log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID)
             destroyPlayer(socket.entity)
             if (players.length === 0) {
                 game.stop()
             }
+            log('Player Count : ' + players.length)
         }
     })
 
@@ -191,7 +200,7 @@ io.on('connection', socket => {
                 })
             })
 
-        console.log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID)
+        log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID + ' Player Count : ' + players.length)
     })
 
     socket.on('setTiles', data => {
@@ -212,4 +221,4 @@ setInterval(() => {
 
 // start listening
 server.listen(PORT)
-console.log('Server is now listening on port ' + PORT)
+log('Server is now listening on port ' + PORT)
