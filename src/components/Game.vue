@@ -60,7 +60,7 @@
     import Controller from '../engine/Common/Controller'
     import Background from '../engine/Client/Background'
     import SnowEntity from '../engine/Client/Snow'
-    import Gui from '../engine/Client/Gui'
+    import GuiTrait from '../engine/Client/Trait/Gui'
 
     import BlockImage from '../assets/texture/block.png'
     import PlayerImage from '../assets/texture/player.png'
@@ -82,6 +82,7 @@
     import Cane2Image from '../assets/texture/cane/cane2.png'
     import Cane3Image from '../assets/texture/cane/cane3.png'
     import Cane4Image from '../assets/texture/cane/cane4.png'
+    import ArrowImage from '../assets/gui/arrow.png'
 
     import io from 'socket.io-client'
 
@@ -137,8 +138,11 @@
                 }
 
                 if (this.$gui) {
-                    this.$gui.destroy()
                     this.$gui = null
+                }
+
+                if (this.$tool) {
+                    this.$tool = null
                 }
 
                 this.isPlaying = false
@@ -159,9 +163,11 @@
             this.$game.add('bg_layer2', BackgroundLayer2)
             this.$game.add('bg_layer3', BackgroundLayer3)
             this.$game.add('snow', SnowImage)
-            this.$game.add('item_container', ItemContainerImage)
             this.$game.add('pickaxe', PickaxeImage)
             this.$game.add('tree', TreeImage)
+
+            this.$game.add('item_container', ItemContainerImage)
+            this.$game.add('arrow', ArrowImage)
 
             this.$game.add('gift1', Gift1Image)
             this.$game.add('gift2', Gift2Image)
@@ -226,9 +232,10 @@
                                 this.$player.setController(this.$controller)
 
                                 // add Gui
-                                this.$gui = new Gui(this.$game, {
+                                this.$gui = new GuiTrait(this.$game, {
                                     container: this.$game.createLayer()
                                 })
+                                this.$player.addTrait(this.$gui)
 
                                 this.$tool = new ToolTrait(this.$game, this.$map, this.$socket, this.$gui)
                                 this.$player.addTrait(this.$tool)
@@ -299,6 +306,14 @@
                                 entities.push(balls[key])
                             }
                             this.$map.setEntities(entities)
+                        }
+
+                        if (this.$gui) {
+                            let players = []
+                            for (let key in remotePlayers) {
+                                players.push(remotePlayers[key])
+                            }
+                            this.$gui.setRemotePlayers(players)
                         }
                     })
                 })
