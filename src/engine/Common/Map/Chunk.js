@@ -21,7 +21,7 @@ export default class Chunk {
     }
 
     clear () {
-        this.tiles = new Array(this.length)
+        this.tiles = (new Array(this.length * 2)).fill(0)
         this.isDirty = true
     }
 
@@ -29,7 +29,7 @@ export default class Chunk {
         tiles = tiles.slice(0, this.length * 2)
         this.tiles = [
             ...tiles,
-            new Array((this.length * 2) - tiles.length)
+            ...(new Array((this.length * 2) - tiles.length)).fill(0)
         ]
         this.isDirty = true
     }

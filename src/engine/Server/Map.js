@@ -1,6 +1,11 @@
 import CommonMap from '../Common/Map'
 import { generateData } from '../Common/Map/Chunk'
 import { CHUNK_SIZE } from '../../config'
+import schemapack from 'schemapack'
+import Redis from 'ioredis'
+
+const redis = new Redis()
+const chunkSchema = schemapack.build([ 'uint8' ])
 
 export default class Map extends CommonMap {
     constructor (app) {
@@ -15,14 +20,23 @@ export default class Map extends CommonMap {
         if (!chunk.isDummy) {
             return chunk
         }
-        if (!this._loadingChunks.hasOwnProperty(x + ';' + y)) {
-            this._loadingChunks[x + ';' + y] = generateData(x, y)
+        let key = x + ';' + y
+        if (!this._loadingChunks.hasOwnProperty(key)) {
+            this._loadingChunks[key] = redis.getBuffer('chunk:' + key)
+                .then(result => {
+                    if (!result) {
+                        return generateData(x, y)
+                    }
+                    return chunkSchema.decode(result)
+                }, () => {
+                    return generateData(x, y)
+                })
                 .then(chunkData => {
-                    delete this._loadingChunks[x + ';' + y]
+                    delete this._loadingChunks[key]
                     return this._handleChunkData(x, y, chunkData)
                 })
         }
-        return this._loadingChunks[x + ';' + y]
+        return this._loadingChunks[key]
     }
 
     loadChunksByPosition (x = 0, y = 0, maxDistance = 1000) {
@@ -63,6 +77,7 @@ export default class Map extends CommonMap {
             .forEach(key => {
                 let chunk = this.chunks[key].chunk
                 if (!chunk.isDummy && chunk.isDirty) {
+                    redis.set('chunk:' + key, chunkSchema.encode(this.chunks[key].chunk.tiles))
                     this._dirtyChunkData[key] = {
                         x: this.chunks[key].x,
                         y: this.chunks[key].y,
