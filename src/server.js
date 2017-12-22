@@ -1,6 +1,5 @@
 import express from 'express'
 import socketio from 'socket.io'
-import fs from 'fs-extra'
 import http from 'http'
 import path from 'path'
 import cors from 'cors'
