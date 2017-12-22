@@ -250,10 +250,12 @@
                     this.$socket.on('update', data => {
                         Object.keys(remotePlayers).forEach(key => {
                             let SERVER_ENTITY_ID = parseInt(key, 10)
-                            if (this.$player && SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID) {
-                                return
-                            }
-                            if (!data.player.hasOwnProperty(key)) {
+                            if (
+                                !data.player.hasOwnProperty(key) || (
+                                    this.$player &&
+                                    SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID
+                                )
+                            ) {
                                 this.$game.destroyEntity(remotePlayers[key])
                                 delete remotePlayers[key]
                             }
