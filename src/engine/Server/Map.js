@@ -68,6 +68,21 @@ export default class Map extends CommonMap {
     update (updateData) {
         super.update(updateData)
 
+        // unload chunks
+        let { outside } = this.getChunksByDistance(
+            this.entities.map(entity => {
+                return {
+                    x: entity.position.x,
+                    y: entity.position.y
+                }
+            }),
+            2000
+        )
+        outside.forEach(chunk => {
+            this.unloadChunk(chunk.x, chunk.y)
+        })
+
+        // update dirty chunks
         Object.keys(this.chunks)
             .forEach(key => {
                 let chunk = this.chunks[key].chunk
