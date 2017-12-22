@@ -67,22 +67,28 @@ export default class Map extends CommonMap {
 
     update (updateData) {
         super.update(updateData)
-        this.updateDirtyChunkData()
-        this.updateDirtyPhysicsBodies()
-        this.resetDirtyTags()
-    }
 
-    updateDirtyChunkData () {
         Object.keys(this.chunks)
             .forEach(key => {
                 let chunk = this.chunks[key].chunk
+                let chunkX = this.chunks[key].x
+                let chunkY = this.chunks[key].y
                 if (!chunk.isDummy && chunk.isDirty) {
-                    redis.set('chunk:' + key, chunkSchema.encode(this.chunks[key].chunk.tiles))
+                    // save chunk data
+                    redis.set('chunk:' + key, chunkSchema.encode(chunk.tiles))
+
+                    // update dirty chunk data list
                     this._dirtyChunkData[key] = {
-                        x: this.chunks[key].x,
-                        y: this.chunks[key].y,
-                        data: this.chunks[key].chunk.tiles
+                        x: chunkX,
+                        y: chunkY,
+                        data: chunk.tiles
                     }
+
+                    // update physics body
+                    this.updatePhysicsBody(chunkX, chunkY)
+
+                    // reset dirty flag
+                    chunk.isDirty = false
                 }
             })
     }
@@ -91,25 +97,5 @@ export default class Map extends CommonMap {
         let chunkData = this._dirtyChunkData
         this._dirtyChunkData = {}
         return Object.keys(chunkData).map(key => chunkData[key])
-    }
-
-    updateDirtyPhysicsBodies () {
-        Object.keys(this.chunks)
-            .forEach(key => {
-                let chunk = this.chunks[key].chunk
-                if (!chunk.isDummy && chunk.isDirty) {
-                    this.updatePhysicsBody(this.chunks[key].x, this.chunks[key].y)
-                }
-            })
-    }
-
-    resetDirtyTags () {
-        Object.keys(this.chunks)
-            .forEach(key => {
-                let chunk = this.chunks[key].chunk
-                if (!chunk.isDummy && chunk.isDirty) {
-                    chunk.isDirty = false
-                }
-            })
     }
 }
