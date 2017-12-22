@@ -468,7 +468,7 @@ export default class Map extends CommonMap {
         })
     }
 
-    unloaChunk (x, y) {
+    unloadChunk (x, y) {
         if (this.chunks.hasOwnProperty(x + ';' + y)) {
             if (this.chunks[x + ';' + y].sprite) {
                 spriteStack.push(this.chunks[x + ';' + y].sprite)
