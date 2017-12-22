@@ -18,7 +18,6 @@ const PORT = 4200
 const app = express()
 const server = http.createServer(app)
 const io = socketio(server)
-const logFile = fs.createWriteStream('./server.log', {flags: 'a'})
 
 // temporary fix for matterjs not working on nodejs https://github.com/liabru/matter-js/issues/468
 global.HTMLElement = class DummyHTMLElement {}
@@ -145,7 +144,6 @@ const ballsData = () => {
 
 const log = (message) => {
     console.log(message)
-    logFile.write(message + '\n')
 }
 
 // handle socket io connections
