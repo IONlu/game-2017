@@ -137,6 +137,20 @@
                     this.$player = null
                 }
 
+                if (this.$remotePlayers) {
+                    for (let key in this.$remotePlayers) {
+                        this.$game.destroyEntity(this.$remotePlayers[key])
+                    }
+                    this.$remotePlayers = []
+                }
+
+                if (this.$balls) {
+                    for (let key in this.$balls) {
+                        this.$game.destroyEntity(this.$balls[key])
+                    }
+                    this.$balls = []
+                }
+
                 if (this.$gui) {
                     this.$gui = null
                 }
@@ -245,10 +259,10 @@
                     })
 
                     // remote entities
-                    let remotePlayers = {}
-                    let balls = {}
+                    this.$remotePlayers = {}
+                    this.$balls = {}
                     this.$socket.on('update', data => {
-                        Object.keys(remotePlayers).forEach(key => {
+                        Object.keys(this.$remotePlayers).forEach(key => {
                             let SERVER_ENTITY_ID = parseInt(key, 10)
                             if (
                                 !data.player.hasOwnProperty(key) || (
@@ -256,8 +270,8 @@
                                     SERVER_ENTITY_ID === this.$player.SERVER_ENTITY_ID
                                 )
                             ) {
-                                this.$game.destroyEntity(remotePlayers[key])
-                                delete remotePlayers[key]
+                                this.$game.destroyEntity(this.$remotePlayers[key])
+                                delete this.$remotePlayers[key]
                             }
                         })
                         Object.keys(data.player).forEach(key => {
@@ -266,15 +280,15 @@
                                 this.$player.body.importState(data.player[key].data, 0.25)
                                 return
                             }
-                            if (!remotePlayers.hasOwnProperty(key)) {
-                                remotePlayers[key] = this.$game.createEntity('Player', {
+                            if (!this.$remotePlayers.hasOwnProperty(key)) {
+                                this.$remotePlayers[key] = this.$game.createEntity('Player', {
                                     colorIndex: data.player[key].colorIndex
                                 })
-                                remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
+                                this.$remotePlayers[key].addTrait(new AttachTextTrait(this.$game, data.player[key].name))
                             }
-                            remotePlayers[key].body.importState(data.player[key].data)
-                            remotePlayers[key].isRunning = data.player[key].isRunning
-                            remotePlayers[key].isJumping = data.player[key].isJumping
+                            this.$remotePlayers[key].body.importState(data.player[key].data)
+                            this.$remotePlayers[key].isRunning = data.player[key].isRunning
+                            this.$remotePlayers[key].isJumping = data.player[key].isJumping
                         })
 
                         data.chunks.forEach(chunk => {
@@ -283,17 +297,17 @@
                             }
                         })
 
-                        Object.keys(balls).forEach(key => {
+                        Object.keys(this.$balls).forEach(key => {
                             if (!data.balls.hasOwnProperty(key)) {
-                                this.$game.destroyEntity(balls[key])
-                                delete balls[key]
+                                this.$game.destroyEntity(this.$balls[key])
+                                delete this.$balls[key]
                             }
                         })
                         Object.keys(data.balls).forEach(key => {
-                            if (!balls.hasOwnProperty(key)) {
-                                balls[key] = this.$game.createEntity('Ball')
+                            if (!this.$balls.hasOwnProperty(key)) {
+                                this.$balls[key] = this.$game.createEntity('Ball')
                             }
-                            balls[key].body.importState(data.balls[key].data)
+                            this.$balls[key].body.importState(data.balls[key].data)
                         })
 
                         if (this.$map) {
@@ -301,19 +315,19 @@
                             if (this.$player) {
                                 entities.push(this.$player)
                             }
-                            for (let key in remotePlayers) {
-                                entities.push(remotePlayers[key])
+                            for (let key in this.$remotePlayers) {
+                                entities.push(this.$remotePlayers[key])
                             }
-                            for (let key in balls) {
-                                entities.push(balls[key])
+                            for (let key in this.$balls) {
+                                entities.push(this.$balls[key])
                             }
                             this.$map.setEntities(entities)
                         }
 
                         if (this.$gui) {
                             let players = []
-                            for (let key in remotePlayers) {
-                                players.push(remotePlayers[key])
+                            for (let key in this.$remotePlayers) {
+                                players.push(this.$remotePlayers[key])
                             }
                             this.$gui.setRemotePlayers(players)
                         }
