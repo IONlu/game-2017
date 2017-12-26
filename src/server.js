@@ -145,17 +145,22 @@ const log = (message) => {
     console.log(message)
 }
 
+const _handleDisconnect = socket => {
+    if (socket.entity) {
+        log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID)
+        destroyPlayer(socket.entity)
+        socket.entity = null
+        if (players.length === 0) {
+            game.stop()
+        }
+        log('Player Count : ' + players.length)
+    }
+}
+
 // handle socket io connections
 io.on('connection', socket => {
     socket.on('disconnect', () => {
-        if (socket.entity) {
-            log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID)
-            destroyPlayer(socket.entity)
-            if (players.length === 0) {
-                game.stop()
-            }
-            log('Player Count : ' + players.length)
-        }
+        _handleDisconnect(socket)
     })
 
     socket.on('controller.start', data => {
@@ -179,6 +184,7 @@ io.on('connection', socket => {
     })
 
     socket.on('start', name => {
+        _handleDisconnect(socket)
         socket.entity = createPlayer(name)
 
         if (players.length === 1) {
