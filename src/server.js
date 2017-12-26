@@ -147,12 +147,14 @@ const log = (message) => {
 
 const _handleDisconnect = socket => {
     if (socket.entity) {
+        let PLAYER_NAME = socket.entity.PLAYER_NAME
+        let ENTITY_ID = socket.entity.ENTITY_ID
         destroyPlayer(socket.entity)
         socket.entity = null
         if (players.length === 0) {
             game.stop()
         }
-        log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID + ' / Player Count: ' + players.length)
+        log(PLAYER_NAME + ' has left the game. ID: ' + ENTITY_ID + ' / Player Count: ' + players.length)
     }
 }
 
