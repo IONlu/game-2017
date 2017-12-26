@@ -147,13 +147,12 @@ const log = (message) => {
 
 const _handleDisconnect = socket => {
     if (socket.entity) {
-        log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID)
         destroyPlayer(socket.entity)
         socket.entity = null
         if (players.length === 0) {
             game.stop()
         }
-        log('Player Count : ' + players.length)
+        log(socket.entity.PLAYER_NAME + ' has left the game. ID: ' + socket.entity.ENTITY_ID + ' / Player Count: ' + players.length)
     }
 }
 
@@ -203,7 +202,7 @@ io.on('connection', socket => {
                 })
             })
 
-        log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID + ' Player Count : ' + players.length)
+        log(socket.entity.PLAYER_NAME + ' has joined the game. ID: ' + socket.entity.ENTITY_ID + ' / Player Count: ' + players.length)
     })
 
     socket.on('setTiles', data => {
